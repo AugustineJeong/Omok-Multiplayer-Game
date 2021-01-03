@@ -1,0 +1,6 @@
+.flex-vertical {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 570px;
+  }
