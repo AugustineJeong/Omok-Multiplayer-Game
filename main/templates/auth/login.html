@@ -44,39 +44,49 @@ THE SOFTWARE. -->
 
   <!-- CSS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-  <link rel="stylesheet" href ="css/custom.css">
-
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 </head>
 <body>
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container" style="text-align: center; margin: 30px auto;">
-      <div class="one columns" style="position: absolute; top: 10px; right: 0px;">
-        <button class="button" style="text-align: center;">
-          Log In
-        </button>
-      </div>
-    <div class="row">
-      <div class="flex-vertical">
-        <h1 style="text-align:center">
-          <span style="font-size: 75px;">Omok</span>
-          <span style="font-size: 35px;">(오목)</span>
-        </h1>
-        <div style="text-align: center; line-height: 4.5;">
-          <button class="button-primary" style="text-align: center">
-            Play Game
-          </button>
+  <form method="post">
+    <div style="padding-left: 20%; padding-right: 20%; padding-top: 10%;">
+        <h3 style="text-align: center;">
+            Sign In
+        </h3>
+        <div class="row" style="padding-top: 2%;">
+            <div class="one-half column">
+                <label for="username">Username</label>
+                <input class="u-full-width" type="search" placeholder="Username" name="username" 
+                style="height: 40px;" required>
+            </div>
+            <div class="one-half column">
+                <label for="password">Password</label>
+                <input class="u-full-width" type="password" placeholder="Password" name="password"
+                style="height: 40px" required>
+            </div>      
+            <div style="text-align: right">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <p style="text-align: left;">{{ message }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+                <p style="font-size: 1px"> 
+                    &nbsp;
+                </p>
+                <input class="button-primary" type="submit" value="Log In">
+            </div>
         </div>
-      </div>
+        <p style="text-align: center; color: grey; font-size: x-small; margin-top: 5%;">By using our services, you acknowledge that you agree with our terms and conditions.</p>
     </div>
-  </div>
+  </form>
+
 
 <!-- End Document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->

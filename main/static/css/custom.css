@@ -4,3 +4,9 @@
     flex-direction: column;
     height: 570px;
   }
+
+  .customCenter {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+  }

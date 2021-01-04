@@ -65,9 +65,9 @@ def login():
         error = None
 
         if (user is None):
-            error = 'Incorrect username.'
+            error = 'Incorrect username or password.'
         elif not check_password_hash(user.password, password):
-            error = 'Incorrect password.'
+            error = 'Incorrect username or password.'
 
         databaseSession.close()
 
