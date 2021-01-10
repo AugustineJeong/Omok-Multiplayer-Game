@@ -13,16 +13,11 @@ Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
 
-def close_db(e=None):
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()
-
 def init_app(app):
-    app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
 def init_db():
+    import main.user
     Base.metadata.create_all(engine)
 
 @click.command('init-db')
