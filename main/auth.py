@@ -17,8 +17,6 @@ def register():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
-        print("--------------------")
-
         error = None
 
         if not username:
