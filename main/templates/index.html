@@ -60,9 +60,15 @@ THE SOFTWARE. -->
   <div class="container" style="text-align: center; margin: 30px auto;">
       <div style="position: absolute; top: 0px; right: 5px;">
         <form method="post">
-          <button class="button" name="signin" type="submit" style="text-align: center">
-            Sign in
-          </button>
+          {% if is_signed_in %}
+            <button class="button" name="corner_button" type="submit" value="log_out" style="text-align: center">
+              Sign out
+            </button>
+          {% else %}
+            <button class="button" name="corner_button" type="submit" value="sign_in" style="text-align: center">
+              Sign in
+            </button>        
+          {% endif %}
         </form>
       </div>
     <div class="row">

@@ -11,6 +11,9 @@ bp = Blueprint('auth', __name__, url_prefix='/authentication')
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
+        if (g.user is not None):
+            return redirect(url_for('index.main_home'))
+            
         databaseSession = Session()
 
         username = request.form['username']
@@ -52,6 +55,9 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
+        if (g.user is not None):
+            return redirect(url_for('index.main_home'))
+
         databaseSession = Session()
 
         username = request.form['username']
@@ -75,7 +81,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return redirect(url_for('index'))
+            return redirect(url_for('index.main_home'))
 
         flash(error)
 
@@ -100,7 +106,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('main.home'))
+    return redirect(url_for('index.main_home'))
 
 
 def login_required(view):
