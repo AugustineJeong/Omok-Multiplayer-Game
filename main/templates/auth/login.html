@@ -62,12 +62,12 @@ THE SOFTWARE. -->
             <div class="one-half column">
                 <label for="username">Username</label>
                 <input class="u-full-width" type="search" placeholder="Username" name="username" 
-                style="height: 40px;" required>
+                style="height: 40px;">
             </div>
             <div class="one-half column">
                 <label for="password">Password</label>
                 <input class="u-full-width" type="password" placeholder="Password" name="password"
-                style="height: 40px" required>
+                style="height: 40px">
             </div>      
             <div style="text-align: right">
             {% with messages = get_flashed_messages() %}
@@ -80,8 +80,15 @@ THE SOFTWARE. -->
                 <p style="font-size: 1px"> 
                     &nbsp;
                 </p>
-                <input class="button-primary" type="submit" value="Log In">
+                <button class="button-primary" name="sign_in_screen_button" type="submit" value="sign_in">
+                  Sign In
+                </button>
             </div>
+        </div>
+        <div style="text-align: center; padding-top: 5ex;">
+          <button class="button" name="sign_in_screen_button" type="submit" value="sign_up" style="text-align: center; border-color: gainsboro;">
+            I don't have an account
+          </button> 
         </div>
         <p style="text-align: center; color: grey; font-size: x-small; margin-top: 5%;">By using our services, you acknowledge that you agree with our terms and conditions.</p>
     </div>

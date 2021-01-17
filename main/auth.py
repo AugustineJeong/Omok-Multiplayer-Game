@@ -10,10 +10,7 @@ bp = Blueprint('auth', __name__, url_prefix='/authentication')
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    if request.method == 'POST':
-        if (g.user is not None):
-            return redirect(url_for('index.main_home'))
-            
+    if request.method == 'POST':           
         databaseSession = Session()
 
         username = request.form['username']
@@ -49,43 +46,53 @@ def register():
             databaseSession.close()
             flash(error)
 
-    return render_template('auth/register.html')
+    if (g.user is not None):
+        return redirect(url_for('index.main_home'))
+    else:
+        return render_template('auth/register.html')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        if (g.user is not None):
-            return redirect(url_for('index.main_home'))
+        if request.form['sign_in_screen_button'] == 'sign_up':
+            return redirect(url_for('auth.register'))
+        elif request.form['sign_in_screen_button'] == 'sign_in':
+            databaseSession = Session()
 
-        databaseSession = Session()
+            username = request.form['username']
+            password = request.form['password']
 
-        username = request.form['username']
-        password = request.form['password']
+            user = None
+            try:
+                user = databaseSession.query(User).filter(User.username==username).first()
+            except:
+                pass
 
-        user = None
-        try:
-            user = databaseSession.query(User).filter(User.username==username).first()
-        except:
-            pass
+            error = None
 
-        error = None
+            if not username:
+                error = 'Username is required.'
+            elif not password:
+                error = 'Password is required.'
+            elif (user is None):
+                error = 'Incorrect username or password.'
+            elif not check_password_hash(user.password, password):
+                error = 'Incorrect username or password.'
 
-        if (user is None):
-            error = 'Incorrect username or password.'
-        elif not check_password_hash(user.password, password):
-            error = 'Incorrect username or password.'
+            databaseSession.close()
 
-        databaseSession.close()
+            if error is None:
+                session.clear()
+                session['user_id'] = user.id
+                return redirect(url_for('index.main_home'))
 
-        if error is None:
-            session.clear()
-            session['user_id'] = user.id
-            return redirect(url_for('index.main_home'))
+            flash(error)
 
-        flash(error)
-
-    return render_template('auth/login.html')
+    if (g.user is not None):
+        return redirect(url_for('index.main_home'))
+    else:
+        return render_template('auth/login.html')
 
 
 @bp.before_app_request
