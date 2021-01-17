@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Website made using Skeleton boilerplate.
+
+The MIT License (MIT)
+
+Copyright (c) 2011-2014 Dave Gamache
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE. -->
+
+<head>
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Omok (오목)</title>
+  <meta name="description" content="">
+  <meta name="AJ" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- The typography base Raleway is served by Google -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <form method="post">
+    <div style="padding-left: 20%; padding-right: 20%; padding-top: 10%;">
+        <h3 style="text-align: center;">
+            Create Account
+        </h3>
+        <div class="row" style="padding-top: 2%;">
+          <div class="one-half column">
+              <label for="username">Username</label>
+              <input class="u-full-width" type="search" placeholder="Username" name="username" 
+              style="height: 40px;" required>
+          </div>
+          <div class="one-half column">
+              <label for="password">Password</label>
+              <input class="u-full-width" type="password" placeholder="Password" name="password"
+              style="height: 40px" required>
+          </div>  
+        </div>
+        <div class="row" style="padding-top: 2%;">
+          <div class="one-half column">
+            <label for="confirm_password">Confirm Password</label>
+            <input class="u-full-width" type="password" placeholder="Confirm Password" name="confirm_password"
+            style="height: 40px" required>
+          </div> 
+        </div>
+          <div style="text-align: right">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              {% for message in messages %}
+                <p style="text-align: left;">{{ message }}</p>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+              <p style="font-size: 1px"> 
+                  &nbsp;
+              </p>
+              <input class="button-primary" type="submit" value="Let's Go!">
+          </div>
+        <p style="text-align: center; color: lightskyblue; font-size: small; margin-top: 5%;">Security Tip: Remember to choose a unique password and do NOT use the same password that you use with other services!</p>
+        <p style="text-align: center; color: grey; font-size: x-small; margin-top: 5%;">By using our services, you acknowledge that you agree with our terms and conditions.</p>
+    </div>
+  </form>
+  
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>

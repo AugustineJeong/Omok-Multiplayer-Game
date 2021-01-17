@@ -15,6 +15,9 @@ def register():
 
         username = request.form['username']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        print("--------------------")
 
         error = None
 
@@ -30,6 +33,9 @@ def register():
                 pass
             if (userExists is not None):
                 error = 'Username {} already exists.'.format(username)
+        
+        if password != confirm_password:
+            error = 'Passwords do not match.'
             
         if error is None:
             databaseSession.add(User(username, generate_password_hash(password)))
