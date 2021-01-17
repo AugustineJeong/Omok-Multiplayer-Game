@@ -32,4 +32,8 @@ def create_app(test_config=None):
 	from . import auth
 	app.register_blueprint(auth.bp)
 
+	# add index blueprint to app
+	from . import index
+	app.register_blueprint(index.bp)
+
 	return app
