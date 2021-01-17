@@ -32,10 +32,9 @@ def register():
             except: 
                 pass
             if (userExists is not None):
-                error = 'Username {} already exists.'.format(username)
-        
-        if password != confirm_password:
-            error = 'Passwords do not match.'
+                error = 'Username \'{}\' already exists.'.format(username)
+            elif password != confirm_password:
+                error = 'Passwords do not match.'
             
         if error is None:
             databaseSession.add(User(username, generate_password_hash(password)))
