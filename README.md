@@ -11,14 +11,22 @@ The project will be built using:
 # Screenshots
 <div>
   <img src="https://user-images.githubusercontent.com/14143525/104836106-5456a000-5860-11eb-82e6-a237a89d4535.png" width="700">
-  <img src="https://user-images.githubusercontent.com/14143525/104836109-5ae51780-5860-11eb-97a4-fa3fca147baf.png" width="700">
-  <img src="https://user-images.githubusercontent.com/14143525/104836117-66d0d980-5860-11eb-98d7-226a60d0c1f6.png" width="700">
-  <img src="https://user-images.githubusercontent.com/14143525/104836118-69333380-5860-11eb-87e7-2030315a7b6c.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836347-34c07700-5862-11eb-82c7-bbf521cb5d04.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836349-3853fe00-5862-11eb-83d9-5623261cc301.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836353-3b4eee80-5862-11eb-8572-aa6bb579d600.png" width="700">
 </div>
 
 # Copyright Notice
 
+Most of Omok-Multiplayer-Game was created by me. 
+<br/>
+<br/>
 [Skeleton](https://github.com/dhg/Skeleton) was created by [Dave Gamache](https://twitter.com/dhg)
+<br/>
+
+The following MIT License applies to the [Skeleton](https://github.com/dhg/Skeleton) code. 
+<br/>
+<br/>
 
 The MIT License (MIT)
 
