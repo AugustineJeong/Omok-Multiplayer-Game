@@ -8,6 +8,14 @@ The project will be built using:
 - Python along with Flask, SQLAlchemy, and SQLite for Backend.
 - HTML, CSS, and JavaScript along with [Skeleton CSS Boilerplate](https://github.com/dhg/Skeleton) for frontend.
 
+# Screenshots
+<div>
+  <img src="https://user-images.githubusercontent.com/14143525/104836106-5456a000-5860-11eb-82e6-a237a89d4535.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836109-5ae51780-5860-11eb-97a4-fa3fca147baf.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836117-66d0d980-5860-11eb-98d7-226a60d0c1f6.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104836118-69333380-5860-11eb-87e7-2030315a7b6c.png" width="700">
+</div>
+
 # Copyright Notice
 
 [Skeleton](https://github.com/dhg/Skeleton) was created by [Dave Gamache](https://twitter.com/dhg)
