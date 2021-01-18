@@ -5,7 +5,7 @@ Omok (오목), also known as five in a row, is a traditional game played in Kore
 This is a project to build a web application on which people can play Omok with other players and keep track of their scores.
 
 The project will be built using:
-- Python along with Flask, SQLAlchemy, and SQLite for Backend.
+- Python along with Flask, SQLAlchemy, and SQLite for backend.
 - HTML, CSS, and JavaScript along with [Skeleton CSS Boilerplate](https://github.com/dhg/Skeleton) for frontend.
 
 # Screenshots
