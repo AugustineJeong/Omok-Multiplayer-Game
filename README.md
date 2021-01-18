@@ -19,9 +19,6 @@ The project will be built using:
 
 # Copyright Notice
 
-**Omok-Multiplayer-Game was created by me** with the help of [Skeleton CSS Boilerplate](https://github.com/dhg/Skeleton).
-<br/>
-<br/>
 [Skeleton](https://github.com/dhg/Skeleton) was created by [Dave Gamache](https://twitter.com/dhg)
 <br/>
 
