@@ -14,11 +14,12 @@ The project will be built using:
   <img src="https://user-images.githubusercontent.com/14143525/104836347-34c07700-5862-11eb-82c7-bbf521cb5d04.png" width="700">
   <img src="https://user-images.githubusercontent.com/14143525/104836349-3853fe00-5862-11eb-83d9-5623261cc301.png" width="700">
   <img src="https://user-images.githubusercontent.com/14143525/104836353-3b4eee80-5862-11eb-8572-aa6bb579d600.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104864757-d68da580-58ee-11eb-967d-63bd7ffd4154.png" width="700">
 </div>
 
 # Copyright Notice
 
-Most of Omok-Multiplayer-Game was created by me. 
+**Omok-Multiplayer-Game was created by me** with the help of [Skeleton CSS Boilerplate](https://github.com/dhg/Skeleton).
 <br/>
 <br/>
 [Skeleton](https://github.com/dhg/Skeleton) was created by [Dave Gamache](https://twitter.com/dhg)
