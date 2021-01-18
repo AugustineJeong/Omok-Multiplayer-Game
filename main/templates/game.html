@@ -57,36 +57,29 @@ THE SOFTWARE. -->
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container" style="text-align: center; margin: 30px auto;">
-      <div style="position: absolute; top: 0px; right: 5px;">
-        <form method="post">
-          {% if is_signed_in %}
-            <button class="button" name="corner_button" type="submit" value="log_out" style="text-align: center">
-              Sign out
-            </button>
-          {% else %}
-            <button class="button" name="corner_button" type="submit" value="sign_in" style="text-align: center">
-              Sign in
-            </button>        
-          {% endif %}
-        </form>
-      </div>
-    <div class="row">
-      <div class="flex-vertical">
-        <h1 style="text-align:center">
-          <span style="font-size: 75px;">Omok</span>
-          <span style="font-size: 35px;">(오목)</span>
-        </h1>
-        <div style="text-align: center; line-height: 4.5;">
-          <form method="post">
-            <button class="button-primary" name="play_button" value="start_game" style="text-align: center">
-              Play Game
-            </button>
-          </form>
-        </div>
-      </div>
+<div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
+  <div class="row">
+    <div class='grid lines'>
+      <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
+      <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
+      <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
+      <div class='dot' style='grid-column: 6/8; grid-row: 18/20;'></div>
+      <div class='dot' style='grid-column: 18/20; grid-row: 18/20;'></div>
+      <div class='dot' style='grid-column: 30/32; grid-row: 18/20;'></div>
+      <div class='dot' style='grid-column: 6/8; grid-row: 30/32;'></div>
+      <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
+      <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
+    </div>
+    <div style="display: inline">
+      <button class="button" style="text-align: center; margin-top: 3vh; margin-right: 1.5vh; border-color: orange; color: orange;">
+        Forfeit Match
+      </button>
+      <button class="button" style="text-align: center; margin-top: 3vh; margin-left: 1.5vh; border-color: red; color: red;">
+        Report Player
+      </button>
     </div>
   </div>
+</div>
 
 <!-- End Document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
