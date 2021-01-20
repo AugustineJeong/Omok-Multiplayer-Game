@@ -50,16 +50,16 @@ THE SOFTWARE. -->
 
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/go_image.png') }}">
 
 </head>
-<body>
 
+<body>
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
   <div class="row">
-    <div class='grid lines'>
+    <div class='grid lines' id="main_board">
       <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
       <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
       <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
@@ -83,5 +83,10 @@ THE SOFTWARE. -->
 
 <!-- End Document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+  <!-- js
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script type="text/javascript" src="{{ url_for('static', filename='js/game_logic.js') }}"></script>
+
 </body>
 </html>
