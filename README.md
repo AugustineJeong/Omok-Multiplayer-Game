@@ -5,22 +5,20 @@ Omok (오목), also known as five in a row, is a traditional game played in Kore
 This is a project to build a web application on which people can play Omok with other players and keep track of their scores.
 
 The project will be built using:
-- Python along with Flask, SQLAlchemy, and SQLite for Backend.
+- Python along with Flask, SQLAlchemy, and SQLite for backend.
 - HTML, CSS, and JavaScript along with [Skeleton CSS Boilerplate](https://github.com/dhg/Skeleton) for frontend.
 
 # Screenshots
 <div>
-  <img src="https://user-images.githubusercontent.com/14143525/104836106-5456a000-5860-11eb-82e6-a237a89d4535.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/105130023-1ee9c680-5a9b-11eb-9a0c-b9e8191fb989.png" width="700">
   <img src="https://user-images.githubusercontent.com/14143525/104836347-34c07700-5862-11eb-82c7-bbf521cb5d04.png" width="700">
   <img src="https://user-images.githubusercontent.com/14143525/104836349-3853fe00-5862-11eb-83d9-5623261cc301.png" width="700">
   <img src="https://user-images.githubusercontent.com/14143525/104836353-3b4eee80-5862-11eb-8572-aa6bb579d600.png" width="700">
+  <img src="https://user-images.githubusercontent.com/14143525/104864757-d68da580-58ee-11eb-967d-63bd7ffd4154.png" width="700">
 </div>
 
 # Copyright Notice
 
-Most of Omok-Multiplayer-Game was created by me. 
-<br/>
-<br/>
 [Skeleton](https://github.com/dhg/Skeleton) was created by [Dave Gamache](https://twitter.com/dhg)
 <br/>
 
