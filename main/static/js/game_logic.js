@@ -1,6 +1,6 @@
 const main_board = document.getElementById('main_board');
 
-const move = (c, x, y) => {
+function move(c, x, y) {
     const stone = document.createElement('div');
 
     if (c) {
@@ -9,20 +9,53 @@ const move = (c, x, y) => {
         stone.classList.add('greyStone')
     }
 
-    let x_start = (x - 1) * 2;
-    let y_start = (y - 1) * 2;
+    console.log(x);
+    console.log(y);
 
-    stone.style.gridRowStart = x_start;
-    stone.style.gridRowEnd = x_start + 2;
-    stone.style.gridColumnStart = y_start;
-    stone.style.gridColumnEnd = y_start + 2;
+    if (x % 2 != 0 || y % 2 != 0) {
+        return;
+    }
+
+    stone.style.gridColumnStart = x;
+    stone.style.gridColumnEnd = x + 2;
+    stone.style.gridRowStart = y;
+    stone.style.gridRowEnd = y + 2;
 
     main_board.append(stone)
 }
 
-window.onload = () => {
-    move(0, 5, 7);
-    move(1, 7, 7);
-    move(0, 7, 8);
-}
+window.onload = setup;
 
+function setup() {
+    for (let y = 0; y < 36; y++) {
+        for (let x = 0; x < 36; x++) {
+
+            const click_box = document.createElement('div');
+            click_box.id = x + "/" + y;
+
+            let x_end = x + 2;
+            let y_end = y + 2;
+
+            click_box.style.gridColumnStart = x;
+            click_box.style.gridColumnEnd = x_end;
+            click_box.style.gridRowStart = y;
+            click_box.style.gridRowEnd = y_end;
+
+            click_box.addEventListener('click', function() {
+                let x_start = parseInt(this.id.substring(0, this.id.indexOf('/')), 10);
+                let y_start = parseInt(this.id.substring(this.id.indexOf('/') + 1, 10));
+
+                move(1, x_start, y_start);
+            });
+
+            main_board.append(click_box);
+        }
+    }
+    move(0, 2, 10);
+    move(1, 4, 6);
+    move(0, 4, 10);
+    move(1, 4, 16);
+    move(0, 10, 16);
+    move(1, 4, 12);
+    move(0, 8, 10);
+}
