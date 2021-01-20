@@ -9,8 +9,10 @@ def main_home():
         if 'corner_button' in request.form:
             if request.form['corner_button'] == 'sign_in':
                 return redirect(url_for('auth.login'))
+
             elif request.form['corner_button'] == 'log_out':
                 return redirect(url_for('auth.logout'))
+                
         elif 'play_button' in request.form:
             if request.form['play_button'] == 'start_game':
                 return redirect(url_for('index.game'))
@@ -18,7 +20,9 @@ def main_home():
     if (g.user is None):
         return render_template('index.html', is_signed_in = 0)
     else:
-        return render_template('index.html', is_signed_in = 1)
+        user_info = (g.user.username + " / Wins: " + str(g.user.wins) + " / Losses: " + str(g.user.losses)
+        + " / Level: " + str(g.user.level))
+        return render_template('index.html', is_signed_in = 1, user_info = user_info)
 
 @bp.route('/game', methods=['GET'])
 @login_required
