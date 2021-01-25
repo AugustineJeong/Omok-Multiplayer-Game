@@ -9,19 +9,33 @@ function move(c, x, y) {
         stone.classList.add('greyStone')
     }
 
-    console.log(x);
-    console.log(y);
-
-    if (x % 2 != 0 || y % 2 != 0) {
+    if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
         return;
     }
 
-    stone.style.gridColumnStart = x;
-    stone.style.gridColumnEnd = x + 2;
-    stone.style.gridRowStart = y;
-    stone.style.gridRowEnd = y + 2;
+    if (x % 2 == 0 && y % 2 == 0) {
+        stone.style.gridColumnStart = x;
+        stone.style.gridColumnEnd = x + 2;
+        stone.style.gridRowStart = y;
+        stone.style.gridRowEnd = y + 2;    
+    } else if (x % 2 != 0 && y % 2 != 0) {
+        stone.style.gridColumnStart = x - 1;
+        stone.style.gridColumnEnd = x + 1;
+        stone.style.gridRowStart = y - 1;
+        stone.style.gridRowEnd = y + 1;      
+    } else if (x % 2 == 0 && y % 2 != 0) {
+        stone.style.gridColumnStart = x;
+        stone.style.gridColumnEnd = x + 2;
+        stone.style.gridRowStart = y - 1;
+        stone.style.gridRowEnd = y + 1;       
+    } else {
+        stone.style.gridColumnStart = x - 1;
+        stone.style.gridColumnEnd = x + 1;
+        stone.style.gridRowStart = y;
+        stone.style.gridRowEnd = y + 2;         
+    }
 
-    main_board.append(stone)
+    main_board.append(stone);
 }
 
 window.onload = setup;
