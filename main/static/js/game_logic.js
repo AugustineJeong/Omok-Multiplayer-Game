@@ -1,13 +1,30 @@
 const main_board = document.getElementById('main_board');
 
+// only to me manipulated from move()
+let blueStoneCount = 0;
+let greyStoneCount = 0;
+let blueStoneTurn = 0;
+let gridMatrix;
+
 function move(c, x, y) {
     const stone = document.createElement('div');
 
+    // return if player attempts to make move when it is not their turn
+    if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+        return;
+    }
+
     if (c) {
         stone.classList.add('blueStone')
+        blueStoneCount++;
+        blueStoneTurn = 0;
     } else {
         stone.classList.add('greyStone')
+        greyStoneCount++;
+        blueStoneTurn = 1;
     }
+
+    console.log(gridMatrix);
 
     if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
         return;
@@ -65,6 +82,15 @@ function setup() {
             main_board.append(click_box);
         }
     }
+
+    gridMatrix = new Array(17);
+    for (let i = 0; i < 17; i++) {
+        gridMatrix[i] = new Array(17);
+        for (let j = 0; j < 17; j++) {
+            gridMatrix[i][j] = -1;
+        }
+    }
+
     move(0, 2, 10);
     move(1, 4, 6);
     move(0, 4, 10);
