@@ -24,8 +24,6 @@ function move(c, x, y) {
         blueStoneTurn = 1;
     }
 
-    console.log(gridMatrix);
-
     if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
         return;
     }
@@ -52,14 +50,20 @@ function move(c, x, y) {
         stone.style.gridRowEnd = y + 2;         
     }
 
-    main_board.append(stone);
+    let xCoordinate = stone.style.gridColumnStart / 2 - 1;
+    let yCoordinate = stone.style.gridRowStart / 2 - 1
+
+    if (gridMatrix[xCoordinate][yCoordinate] === -1) {
+        gridMatrix[xCoordinate][yCoordinate] = c;
+        main_board.append(stone);
+    } 
 }
 
 window.onload = setup;
 
 function setup() {
-    for (let y = 0; y < 36; y++) {
-        for (let x = 0; x < 36; x++) {
+    for (let y = 1; y <= 36; y++) {
+        for (let x = 1; x <= 36; x++) {
 
             const click_box = document.createElement('div');
             click_box.id = x + "/" + y;
