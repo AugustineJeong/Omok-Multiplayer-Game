@@ -1,11 +1,13 @@
 const main_board = document.getElementById('main_board');
 
-// only to me manipulated from move()
+// only to be manipulated from move()
 let blueStoneCount = 0;
 let greyStoneCount = 0;
 let blueStoneTurn = 0;
 let gridMatrix;
 
+// this function places the stone on the specified position and also 
+// adds this information to gridMatrix
 function move(c, x, y) {
     const stone = document.createElement('div');
 
@@ -61,6 +63,9 @@ function move(c, x, y) {
 
 window.onload = setup;
 
+// this function fills the grid with div elements with an id corresponding to their coordinates
+// an event listener is also added to the div elements to place the stones when they are clicked
+// gridMatrix is initialized with a default value of -1
 function setup() {
     for (let y = 1; y <= 36; y++) {
         for (let x = 1; x <= 36; x++) {
