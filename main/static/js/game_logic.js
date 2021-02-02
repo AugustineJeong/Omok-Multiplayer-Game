@@ -6,15 +6,112 @@ let greyStoneCount = 0;
 let blueStoneTurn = 0;
 let gridMatrix;
 
+// this is the colour assigned to the player (1 is blue, 0 is grey)
+let player = 1;
+
+// check if the win condition has been reached for the player
+function checkWinCondition() {
+    consectiveStonesCount = 0;
+
+    // check horizontal win condition
+    for (let i = 0; i < 17; i++) {
+        for (let j = 0; j < 17; j++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }
+        }
+        consectiveStonesCount = 0;
+    }
+
+    // check vertical win condition
+    for (let j = 0; j < 17; j++) {
+        for (let i = 0; i < 17; i++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }
+        }
+        consectiveStonesCount = 0;
+    }
+
+    // check diagonal win condition
+    for (let x = 0; x <= 12; x++) {
+        for (let i = x, j = 0; i < 17 && j < 17; i++, j++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }       
+        }
+        consectiveStonesCount = 0;
+    }
+
+    for (let y = 1; y <= 12; y++) {
+        for (let i = 0, j = y; i < 17 && j < 17; i++, j++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }       
+        }
+        consectiveStonesCount = 0;
+    }
+
+    for (let x = 16; x >= 4; x--) {
+        for (let i = x, j = 0; i >= 0 && j < 17; i--, j++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }       
+        }
+        consectiveStonesCount = 0;
+    }
+
+    for (let y = 1; y <= 12; y++) {
+        for (let i = 16, j = y; i >= 0 && j < 17; i--, j++) {
+            if (gridMatrix[i][j] === player) {
+                consectiveStonesCount++;
+                if (consectiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consectiveStonesCount = 0;
+            }       
+        }
+        consectiveStonesCount = 0;
+    }
+
+    return false;
+}
+
 // this function places the stone on the specified position and also 
 // adds this information to gridMatrix
 function move(c, x, y) {
     const stone = document.createElement('div');
 
-    // return if player attempts to make move when it is not their turn
-    if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
-        return;
-    }
+    // // return if player attempts to make move when it is not their turn
+    // if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+    //     return;
+    // }
 
     if (c) {
         stone.classList.add('blueStone')
@@ -100,7 +197,7 @@ function setup() {
         }
     }
 
-    move(0, 2, 10);
+    move(0, 2, 12);
     move(1, 4, 6);
     move(0, 4, 10);
     move(1, 4, 16);
