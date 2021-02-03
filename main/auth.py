@@ -23,6 +23,12 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
+        elif len(username) > 10:
+            error = 'Username should be under 10 characters.'
+        elif len(password) > 15:
+            error = 'Password should be under 15 characters.'
+        elif username.isspace():
+            error = 'Username cannot be empty.'
         else: 
             userExists = None
             try:
