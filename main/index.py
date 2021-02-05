@@ -38,4 +38,5 @@ def main_home():
 @bp.route('/game', methods=['GET'])
 @login_required
 def game():
-    return render_template('game.html')
+    game_message = 'Time Remaining: 00:00'
+    return render_template('game.html', game_message=game_message)

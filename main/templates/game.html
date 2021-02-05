@@ -76,12 +76,9 @@ Copyright (c) 2021 Augusitne Jeong -->
       <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
       <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
     </div>
-    <div style="display: inline">
-      <button class="button" style="text-align: center; margin-top: 3vh; margin-right: 1.5vh; border-color: orange; color: orange;">
-        Forfeit Match
-      </button>
-      <button class="button" style="text-align: center; margin-top: 3vh; margin-left: 1.5vh; border-color: red; color: red;">
-        Player Inactive
+    <div style="text-align: center; margin-top: 3vh;">
+      <button name="message_box" style="text-align: center; border-color: black; pointer-events: none;" disabled>
+        {{ game_message }}
       </button>
     </div>
   </div>
