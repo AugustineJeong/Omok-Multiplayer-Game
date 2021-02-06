@@ -9,7 +9,7 @@
 
 from sqlalchemy import Column, String, Integer, Date
 
-from main.base import Base
+from base import Base
 
 class User(Base):
     __tablename__ = 'users'

@@ -10,7 +10,7 @@
 # Copyright (c) 2021 Augustine Jeong
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
-from main.auth import login_required
+from auth import login_required
 
 bp = Blueprint('index', __name__, url_prefix='/index')
 
