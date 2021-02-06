@@ -6,64 +6,72 @@
 Copyright (c) 2021 Augusitne Jeong -->
 
 <head>
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
   <title>Omok (오목)</title>
   <meta name="description" content="">
   <meta name="AJ" content="">
 
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <!-- The typography base Raleway is served by Google -->
   <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/go_image.png') }}">
 
 </head>
 
 <body>
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
-  <div class="row">
-    <div class='grid lines' style="cursor: pointer;" id="main_board">
-      <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
-      <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
-      <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
-      <div class='dot' style='grid-column: 6/8; grid-row: 18/20;'></div>
-      <div class='dot' style='grid-column: 18/20; grid-row: 18/20;'></div>
-      <div class='dot' style='grid-column: 30/32; grid-row: 18/20;'></div>
-      <div class='dot' style='grid-column: 6/8; grid-row: 30/32;'></div>
-      <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
-      <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
-    </div>
-    <div style="text-align: center; margin-top: 3vh;">
-      <button name="message_box" style="text-align: center; border-color: black; pointer-events: none;" disabled>
-        {{ game_message }}
-      </button>
+  <div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
+    <div class="row">
+      <div class='grid lines' style="cursor: pointer;" id="main_board">
+        <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
+        <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
+        <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
+        <div class='dot' style='grid-column: 6/8; grid-row: 18/20;'></div>
+        <div class='dot' style='grid-column: 18/20; grid-row: 18/20;'></div>
+        <div class='dot' style='grid-column: 30/32; grid-row: 18/20;'></div>
+        <div class='dot' style='grid-column: 6/8; grid-row: 30/32;'></div>
+        <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
+        <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
+      </div>
+      <div style="text-align: center; margin-top: 3vh;">
+        <button name="message_box" style="text-align: center; border-color: black; pointer-events: none;" disabled>
+          {{ game_message }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script type="module" src="{{ url_for('static', filename='js/game_logic.js') }}"></script>
+  <script src="https://cdn.socket.io/3.1.1/socket.io.min.js"></script>
 
-  <!-- js
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/game_logic.js') }}"></script>
+  <!-- The following license applies to socket.io-client
+    
+  The MIT License (MIT)
+
+  Copyright (c) 2014 Guillermo Rauch
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE. -->
 
 </body>
 </html>

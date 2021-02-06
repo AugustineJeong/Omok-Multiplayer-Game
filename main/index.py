@@ -11,6 +11,7 @@
 
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from auth import login_required
+from main import socketIO, app
 
 bp = Blueprint('index', __name__, url_prefix='/index')
 
@@ -40,3 +41,8 @@ def main_home():
 def game():
     game_message = 'Time Remaining: 00:00'
     return render_template('game.html', game_message=game_message)
+
+@socketIO.on('stone_placement')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    app.logger.info("received stone_placement")
+    socketIO.emit('placement_response', json)

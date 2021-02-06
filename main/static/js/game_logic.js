@@ -1,3 +1,10 @@
+const socket = io();
+
+socket.on('placement_response', function(json) {
+    console.log("server response received")
+    move(json.c, json.x, json.y)
+})
+
 const main_board = document.getElementById('main_board');
 
 // only to be manipulated from move()
@@ -155,6 +162,12 @@ function move(c, x, y) {
     if (gridMatrix[xCoordinate][yCoordinate] === -1) {
         gridMatrix[xCoordinate][yCoordinate] = c;
         main_board.append(stone);
+
+        socket.emit('stone_placement', {
+            c : c,
+            x : x,
+            y : y
+        });
     } 
 }
 
