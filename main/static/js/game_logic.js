@@ -108,10 +108,10 @@ function checkWinCondition() {
 function move(c, x, y) {
     const stone = document.createElement('div');
 
-    // // return if player attempts to make move when it is not their turn
-    // if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
-    //     return;
-    // }
+    // return if player attempts to make move when it is not their turn
+    if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+        return;
+    }
 
     if (c) {
         stone.classList.add('blueStone')

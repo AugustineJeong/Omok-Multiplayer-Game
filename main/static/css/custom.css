@@ -22,10 +22,10 @@
   }
 
   .lines {
-    border-right: 2px solid lightblue;
-    border-left: 1.2px solid lightblue;
-    border-bottom: 1.2px solid lightblue;
-    border-top: 2px solid lightblue;
+    border-right: 2.5px solid lightblue;
+    border-left: 1.7px solid lightblue;
+    border-bottom: 1.7px solid lightblue;
+    border-top: 2.5px solid lightblue;
     z-index: 2;
     position: relative;
     background-size: calc(540px / 18) calc(540px / 18);
