@@ -28,11 +28,13 @@ Copyright (c) 2021 Augusitne Jeong -->
       <div style="position: absolute; top: 0px; right: 5px;">
         <form method="post">
           {% if is_signed_in %}
-            <button class="button" name="corner_button" type="submit" value="log_out" style="text-align: center">
+            <button class="button" name="corner_button" type="submit" value="log_out" style="text-align: center; 
+                border-color: black; color: black;">
               Sign out
             </button>
           {% else %}
-            <button class="button" name="corner_button" type="submit" value="sign_in" style="text-align: center">
+            <button class="button" name="corner_button" type="submit" value="sign_in" style="text-align: center; 
+                border-color: black; color: black;">
               Sign in
             </button>        
           {% endif %}
@@ -53,7 +55,7 @@ Copyright (c) 2021 Augusitne Jeong -->
         </div>
       </div>
       <div style="text-align: center">
-        <p style="color: grey;">
+        <p style="color: black;">
           {{ user_info }}
         </p> 
       </div>

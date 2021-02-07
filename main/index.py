@@ -42,6 +42,10 @@ def game():
     game_message = 'Time Remaining: 00:00'
     return render_template('game.html', game_message=game_message)
 
+@bp.route('/finding', methods=['GET'])
+def finding_game():
+    return render_template('finding.html')
+
 @socketIO.on('stone_placement')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     app.logger.info("received stone_placement")
