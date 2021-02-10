@@ -12,6 +12,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from auth import login_required
 from main import socketIO, app
+from collections import deque
 
 bp = Blueprint('index', __name__, url_prefix='/index')
 
@@ -46,7 +47,40 @@ def game():
 def finding_game():
     return render_template('finding.html')
 
+connected_clients = deque()
+game_rooms_dictionary = dict()
+
+@socketIO.on('connect')
+def handle_connect_event():
+    connected_clients.append(request.sid)
+
+@socketIO.on('disconnect')
+def handle_connect_event():
+    connected_clients.remove(request.sid)
+    try:
+        game_opponent = game_rooms_dictionary.pop('key', request.sid)
+        game_rooms_dictionary.pop('key', game_opponent)
+    except:
+        pass
+
+@socketIO.on('request_room')
+def request_game_room():
+    if len(socketio.rooms['/'][request.sid]) == 1:
+        if len(connected_clients) >= 2:
+            connected_clients.remove(request.sid)
+            game_opponent_id = connectedClients.popleft()
+            join_room(game_opponent)
+            game_rooms_dictionary[request.sid] = game_opponent_id
+            game_rooms_dictionary[game_opponent_id] = game_opponent_id
+
+@socketIO.on('check_entered_room')
+def check_entered_game_room():
+    current_game_room = game_rooms_dictionary[request.sid]
+    json = {'response': len(socketio.rooms['/'][current_game_room]) == 2}
+    socketIO.emit('check_entered_room_response', json)
+        
 @socketIO.on('stone_placement')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
+def handle_my_custom_event(json):
     app.logger.info("received stone_placement")
     socketIO.emit('placement_response', json)
+
