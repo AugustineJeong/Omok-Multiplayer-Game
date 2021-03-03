@@ -44,43 +44,38 @@ def game():
     return render_template('game.html', game_message=game_message)
 
 @bp.route('/finding', methods=['GET'])
+@login_required
 def finding_game():
     return render_template('finding.html')
 
-connected_clients = deque()
 game_rooms_dictionary = dict()
-
-@socketIO.on('connect')
-def handle_connect_event():
-    connected_clients.append(request.sid)
-
-@socketIO.on('disconnect')
-def handle_connect_event():
-    connected_clients.remove(request.sid)
-    try:
-        game_opponent = game_rooms_dictionary.pop('key', request.sid)
-        game_rooms_dictionary.pop('key', game_opponent)
-    except:
-        pass
+game_rooms = list()
+for i in range(10):
+    game_rooms.append(list())
 
 @socketIO.on('request_room')
 def request_game_room():
-    if len(socketio.rooms['/'][request.sid]) == 1:
-        if len(connected_clients) >= 2:
-            connected_clients.remove(request.sid)
-            game_opponent_id = connectedClients.popleft()
-            join_room(game_opponent)
-            game_rooms_dictionary[request.sid] = game_opponent_id
-            game_rooms_dictionary[game_opponent_id] = game_opponent_id
+    for i in range(10):
+        if 2 > len(game_rooms[i]):
+            game_rooms[i].append(request.sid)
+            join_room(i)
+            game_rooms_dictionary[request.sid] = i
+            
+@socketIO.on('disconnect')
+def handle_connect_event():
+    try:
+        room_number = game_rooms_dictionary.pop('key', request.sid)
+        game_rooms[room_number].remove(request.sid)
+    except:
+        pass
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
-    current_game_room = game_rooms_dictionary[request.sid]
-    json = {'response': len(socketio.rooms['/'][current_game_room]) == 2}
+    current_game_room_number = game_rooms_dictionary[request.sid]
+    json = {'response': len(game_rooms[current_game_room_number]) == 2}
     socketIO.emit('check_entered_room_response', json)
         
 @socketIO.on('stone_placement')
 def handle_my_custom_event(json):
-    app.logger.info("received stone_placement")
     socketIO.emit('placement_response', json)
 
