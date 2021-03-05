@@ -5,6 +5,20 @@ socket.on('placement_response', function(json) {
     move(json.c, json.x, json.y)
 })
 
+socket.on('check_entered_room_response', function(json) {
+    playerInRoom = json.response
+    console.log(json)
+    if (playerInRoom) {
+        console.log("player in room now!");
+        clearInterval(intervalId);
+    }
+})
+
+let playerInRoom = false;
+let intervalId;
+
+//
+
 const main_board = document.getElementById('main_board');
 
 // only to be manipulated from move()
@@ -18,93 +32,93 @@ let player = 1;
 
 // check if the win condition has been reached for the player
 function checkWinCondition() {
-    consectiveStonesCount = 0;
+    consecuriveStonesCount = 0;
 
     // check horizontal win condition
     for (let i = 0; i < 17; i++) {
         for (let j = 0; j < 17; j++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     // check vertical win condition
     for (let j = 0; j < 17; j++) {
         for (let i = 0; i < 17; i++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     // check diagonal win condition
     for (let x = 0; x <= 12; x++) {
         for (let i = x, j = 0; i < 17 && j < 17; i++, j++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }       
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     for (let y = 1; y <= 12; y++) {
         for (let i = 0, j = y; i < 17 && j < 17; i++, j++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }       
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     for (let x = 16; x >= 4; x--) {
         for (let i = x, j = 0; i >= 0 && j < 17; i--, j++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }       
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     for (let y = 1; y <= 12; y++) {
         for (let i = 16, j = y; i >= 0 && j < 17; i--, j++) {
             if (gridMatrix[i][j] === player) {
-                consectiveStonesCount++;
-                if (consectiveStonesCount >= 5) {
+                consecuriveStonesCount++;
+                if (consecuriveStonesCount >= 5) {
                     return true;
                 }
             } else {
-                consectiveStonesCount = 0;
+                consecuriveStonesCount = 0;
             }       
         }
-        consectiveStonesCount = 0;
+        consecuriveStonesCount = 0;
     }
 
     return false;
@@ -163,11 +177,11 @@ function move(c, x, y) {
         gridMatrix[xCoordinate][yCoordinate] = c;
         main_board.append(stone);
 
-        socket.emit('stone_placement', {
-            c : c,
-            x : x,
-            y : y
-        });
+        // socket.emit('stone_placement', {
+        //     c : c,
+        //     x : x,
+        //     y : y
+        // });
     } 
 }
 
@@ -217,4 +231,10 @@ function setup() {
     move(0, 10, 16);
     move(1, 4, 12);
     move(0, 8, 10);
+
+    socket.emit('request_room');
+
+    intervalId = setInterval(() => {
+        socket.emit('check_entered_room');
+    }, 5000);
 }
