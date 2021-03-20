@@ -7,9 +7,13 @@
 # Other code in file written by Augustine Jeong
 # Copyright (c) 2021 Augustine Jeong
 
-from sqlalchemy import Column, String, Integer, Date
+import os
+import click
 
-from base import Base
+from sqlalchemy import Column, String, Integer, Date
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
@@ -27,3 +31,14 @@ class User(Base):
         self.wins = wins
         self.losses = losses
         self.level = level
+
+def init_app(app):
+    app.cli.add_command(init_db_command)
+
+def init_db():
+    Base.metadata.create_all(engine)
+
+@click.command('init-db')
+def init_db_command():
+    init_db()
+    click.echo('Successfully initialized the database.')
