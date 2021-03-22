@@ -17,8 +17,6 @@ socket.on('check_entered_room_response', function(json) {
 let playerInRoom = false;
 let intervalId;
 
-//
-
 const main_board = document.getElementById('main_board');
 
 // only to be manipulated from move()
@@ -233,6 +231,10 @@ function setup() {
     move(0, 8, 10);
 
     socket.emit('request_room');
+
+    window.onbeforeunload = () => {
+        socket.emit('disconnect_from_room')
+    }
 
     intervalId = setInterval(() => {
         socket.emit('check_entered_room');

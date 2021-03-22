@@ -267,7 +267,23 @@ def check_entered_game_room():
 		app.logger.error("could not find current game room number")
 		json = {'response': False}
 		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[session.get('user_id')])
-		
+
+@socketIO.on('disconnect_from_room')
+def disconnect_from_game_room():
+	try:
+		if session.get('user_id') in connectedPlayersList:
+			connectedPlayersList.remove(session.get('user_id'))
+			i = game_rooms_dictionary[session.get('user_id')]
+			app.logger.info("# of players currently in room " + str(i) + " is (before removing): " + str(len(game_rooms[i])))
+			leave_room(i)
+			game_rooms[i].remove(session.get('user_id'))
+			del game_rooms_dictionary[session.get('user_id')]
+			app.logger.info("Player " + str(session.get('user_id')) + " left room number: " + str(i))
+			app.logger.info("# of players currently in room " + str(i) + " is (after removing): " + str(len(game_rooms[i])))
+	except:
+		app.logger.error("error disconnecting user from game room")
+		pass
+
 @socketIO.on('stone_placement')
 def handle_my_custom_event(json):
 	socketIO.emit('placement_response', json, room=game_rooms_dictionary[session.get('user_id')])
