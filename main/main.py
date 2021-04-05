@@ -221,6 +221,7 @@ def finding_game():
 	return render_template('finding.html')
 
 game_rooms_dictionary = dict()
+sid_dictionary = dict()
 game_rooms = list()
 for i in range(10):
 	game_rooms.append(list())
@@ -251,18 +252,34 @@ def request_game_room():
 				join_room(i)
 				app.logger.info("Player " + str(session.get('user_id')) + " joined room number: " + str(i))
 				game_rooms_dictionary[session.get('user_id')] = i
+				sid_dictionary[session.get('user_id')] = request.sid
 				app.logger.info("# of players currently in room " + str(i) + " is (after adding): " + str(len(game_rooms[i])))
 				break
+
+def notifyCurrentSessionPlayerColour():
+	isPlayerBlue = None
+	i = game_rooms_dictionary[session.get('user_id')]
+	for player in game_rooms[i]:
+		try:
+			isPlayerBlue = game_rooms[i].index(player)
+			app.logger.info("player " + str(player) + " colour is: " + str(isPlayerBlue))
+		except:
+			pass
+		if isPlayerBlue == 0 or isPlayerBlue == 1:
+			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=sid_dictionary[player])
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
 	try:
 		if len(game_rooms[game_rooms_dictionary[session.get('user_id')]]) == 2:
 			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[session.get('user_id')])
-			app.logger.info("true")
+			i = game_rooms_dictionary[session.get('user_id')]
+			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " in room")
+			notifyCurrentSessionPlayerColour()
 		else:
 			socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[session.get('user_id')])
-			app.logger.info("false")
+			i = game_rooms_dictionary[session.get('user_id')]
+			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " not in room")
 	except:
 		app.logger.error("could not find current game room number")
 		json = {'response': False}

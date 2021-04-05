@@ -6,11 +6,29 @@ socket.on('placement_response', function(json) {
 })
 
 socket.on('check_entered_room_response', function(json) {
-    playerInRoom = json.response
     console.log(json)
+
+    playerInRoom = json.response
+
     if (playerInRoom) {
         console.log("player in room now!");
         clearInterval(intervalId);
+    }
+})
+
+socket.on('player_colour_assignment', function(json) {
+    console.log(json)
+
+    isPlayerBlue = json.isPlayerBlue
+
+    if (isPlayerBlue == 0 || isPlayerBlue == 1) {
+        console.log("player colour assigned!");
+        if (isPlayerBlue) {
+            console.log("player is BLUE")
+        } else {
+            console.log("player is GREY")
+        }
+        isPlayerColourAssigned = 1;
     }
 })
 
@@ -22,8 +40,8 @@ const main_board = document.getElementById('main_board');
 // only to be manipulated from move()
 let blueStoneCount = 0;
 let greyStoneCount = 0;
-let blueStoneTurn = 0;
-let isUserBlue = 0;
+let blueStoneTurn = 1;
+let isPlayerBlue = -1;
 let isPlayerColourAssigned = 0;
 let gridMatrix;
 
@@ -129,6 +147,10 @@ function checkWinCondition() {
 function move(c, x, y) {
     const stone = document.createElement('div');
 
+    if (!isPlayerColourAssigned) {
+        return;
+    }
+
     // return if player attempts to make move when it is not their turn
     if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
         return;
@@ -209,7 +231,7 @@ function setup() {
                 let x_start = parseInt(this.id.substring(0, this.id.indexOf('/')), 10);
                 let y_start = parseInt(this.id.substring(this.id.indexOf('/') + 1, 10));
 
-                move(isUserBlue, x_start, y_start);
+                move(isPlayerBlue, x_start, y_start);
             });
 
             main_board.append(click_box);
