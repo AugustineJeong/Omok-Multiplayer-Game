@@ -336,6 +336,7 @@ def handle_my_custom_event(json):
 	socketIO.emit('placement_response', json, room=game_rooms_dictionary[session.get('user_id')])
 
 # ------------------------------------------------------------------------------------------
-# Run app
+# run app
+
 if __name__ == '__main__':
 	socketIO.run(app)
