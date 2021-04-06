@@ -32,15 +32,15 @@
 # Copyright (c) 2021 Augustine Jeong
 
 import os
+import click
 
 from flask import Flask, flash, g, redirect, render_template, request, session, url_for
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Column, String, Integer, Date
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from werkzeug.security import check_password_hash, generate_password_hash
 from collections import deque
-
-from data import User, init_app
 
 # ------------------------------------------------------------------------------------------
 # Flask app, SocketIO, and SQLAlchemy
@@ -58,6 +58,36 @@ except OSError:
 engine = create_engine('sqlite:///' + os.path.join(app.instance_path, 'db.sqlite3'))
 session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String)
+    password = Column(String)
+    wins = Column(Integer)
+    losses = Column(Integer)
+    level = Column(Integer)
+
+    def __init__(self, username, password, wins=0, losses=0, level=1):
+        self.username = username
+        self.password = password
+        self.wins = wins
+        self.losses = losses
+        self.level = level
+
+def init_app(app):
+    app.cli.add_command(init_db_command)
+
+def init_db():
+    Base.metadata.create_all(engine)
+
+@click.command('init-db')
+def init_db_command():
+    init_db()
+    click.echo('Successfully initialized the database.')
 
 init_app(app)
 
