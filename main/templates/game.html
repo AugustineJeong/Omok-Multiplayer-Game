@@ -25,27 +25,48 @@ Copyright (c) 2021 Augusitne Jeong -->
 </head>
 
 <body>
-  <div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
-    <div class="row">
-      <div class='grid lines' style="cursor: pointer;" id="main_board">
-        <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
-        <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
-        <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
-        <div class='dot' style='grid-column: 6/8; grid-row: 18/20;'></div>
-        <div class='dot' style='grid-column: 18/20; grid-row: 18/20;'></div>
-        <div class='dot' style='grid-column: 30/32; grid-row: 18/20;'></div>
-        <div class='dot' style='grid-column: 6/8; grid-row: 30/32;'></div>
-        <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
-        <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
-      </div>
-      <div style="text-align: center; margin-top: 3vh;">
-        <button name="message_box" style="text-align: center; border-color: black; pointer-events: none;" disabled>
-          {{ game_message }}
-        </button>
+  <div id= "game_view" style="display: none;">
+    <div style="text-align: center; justify-content: center; display: flex; margin-top: 3vh;">
+      <div class="row">
+        <div class='grid lines' style="cursor: pointer;" id="main_board">
+          <div class='dot' style='grid-column: 6/8; grid-row: 6/8;'></div>
+          <div class='dot' style='grid-column: 18/20; grid-row: 6/8;'></div>
+          <div class='dot' style='grid-column: 30/32; grid-row: 6/8;'></div>
+          <div class='dot' style='grid-column: 6/8; grid-row: 18/20;'></div>
+          <div class='dot' style='grid-column: 18/20; grid-row: 18/20;'></div>
+          <div class='dot' style='grid-column: 30/32; grid-row: 18/20;'></div>
+          <div class='dot' style='grid-column: 6/8; grid-row: 30/32;'></div>
+          <div class='dot' style='grid-column: 18/20; grid-row: 30/32;'></div>
+          <div class='dot' style='grid-column: 30/32; grid-row: 30/32;'></div>
+        </div>
+        <div style="text-align: center; margin-top: 3vh;">
+          <button name="message_box" style="text-align: center; border-color: black; pointer-events: none;" disabled>
+            {{ game_message }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <div id="finding_view" style="display: block">
+    <div class="container" style="text-align: center; margin: 30px auto;">
+      <div style="position: absolute; top: 0px; right: 5px;">
+        <form method="post">
+            <button class="button" name="corner_button" type="submit" style="text-align: center; 
+                border-color: red; color: red;">
+              Exit Queue
+            </button>
+        </form>
+      </div>
+      <div class="flex-vertical">
+        <h3 style="text-align:center;">
+          Searching for game ... 
+        </h3>
+        &nbsp;
+        <div class="loader" style="margin-left: auto; margin-right: auto;"></div>
+      </div>
+    </div>
+  </div>
 </body>
 
 <script type="module" src="{{ url_for('static', filename='js/game_logic.js') }}"></script>
