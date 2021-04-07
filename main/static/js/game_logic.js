@@ -13,6 +13,11 @@ socket.on('check_entered_room_response', function(json) {
     if (playerInRoom) {
         console.log("player in room now!");
         clearInterval(intervalId);
+
+        document.getElementById('game_search_status').innerText = "Found game, joining!"
+        
+        document.getElementById('finding_view').style.display = 'none'
+        document.getElementById('game_view').style.display = 'block'
     }
 })
 
