@@ -91,7 +91,7 @@ def init_db_command():
 
 init_app(app)
 
-socketIO = SocketIO(app, async_mode='eventlet')
+socketIO = SocketIO(app)
 
 # ------------------------------------------------------------------------------------------
 # authentication
