@@ -212,6 +212,8 @@ def login_required():
 # ------------------------------------------------------------------------------------------
 # index
 
+playersInGame = set()
+
 @app.route('/index', methods=('GET', 'POST'))
 def main_home():
 	if request.method == 'POST':
@@ -238,6 +240,12 @@ def game():
 	return_value = login_required()
 	if return_value is not None:
 		return return_value
+
+	# do not let player join new game session if player is already in one
+	if g.user.id in playersInGame:
+		return redirect(url_for('main_home'))
+	
+	playersInGame.add(g.user.id)
 
 	game_message = 'Time Remaining: 00:00'
 	return render_template('game.html', game_message=game_message)
@@ -317,6 +325,9 @@ def check_entered_game_room():
 
 @socketIO.on('disconnect_from_room')
 def disconnect_from_game_room():
+	load_logged_in_user()
+	playersInGame.remove(g.user.id)
+
 	try:
 		if session.get('user_id') in connectedPlayersList:
 			connectedPlayersList.remove(session.get('user_id'))

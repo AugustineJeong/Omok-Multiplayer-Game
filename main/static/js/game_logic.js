@@ -15,7 +15,6 @@ socket.on('check_entered_room_response', function(json) {
         clearInterval(intervalId);
 
         document.getElementById('game_search_status').innerText = "Found game, joining!"
-        
         document.getElementById('finding_view').style.display = 'none'
         document.getElementById('game_view').style.display = 'block'
     }
