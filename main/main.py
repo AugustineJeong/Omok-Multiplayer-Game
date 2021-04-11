@@ -254,21 +254,6 @@ def game():
 
 	return render_template('game.html')
 
-
-# @app.route('/index', methods=('GET', 'POST'))
-# def main_home():
-# 	if request.method == 'POST':
-# 		if 'corner_button' in request.form:
-# 			if request.form['corner_button'] == 'sign_in':
-# 				return redirect(url_for('login'))
-
-# 			elif request.form['corner_button'] == 'log_out':
-# 				return redirect(url_for('logout'))
-				
-		# elif 'play_button' in request.form:
-		# 	if request.form['play_button'] == 'start_game':
-		# 		return redirect(url_for('game'))
-
 @app.route('/index/finding', methods=['GET'])
 def finding_game():
 	return_value = login_required()
