@@ -235,8 +235,13 @@ def main_home():
 		+ " / Level: " + str(g.user.level))
 		return render_template('index.html', is_signed_in = 1, user_info = user_info)
 
-@app.route('/index/game', methods=['GET'])
+@app.route('/index/game', methods=('GET', 'POST'))
 def game():
+	if request.method == 'POST':
+		if 'corner_button' in request.form:
+			if request.form['corner_button'] == 'exit_queue':
+				return redirect(url_for('main_home'))
+
 	return_value = login_required()
 	if return_value is not None:
 		return return_value
@@ -244,11 +249,25 @@ def game():
 	# do not let player join new game session if player is already in one
 	if g.user.id in playersInGame:
 		return redirect(url_for('main_home'))
-	
+
 	playersInGame.add(g.user.id)
 
-	game_message = 'Time Remaining: 00:00'
-	return render_template('game.html', game_message=game_message)
+	return render_template('game.html')
+
+
+# @app.route('/index', methods=('GET', 'POST'))
+# def main_home():
+# 	if request.method == 'POST':
+# 		if 'corner_button' in request.form:
+# 			if request.form['corner_button'] == 'sign_in':
+# 				return redirect(url_for('login'))
+
+# 			elif request.form['corner_button'] == 'log_out':
+# 				return redirect(url_for('logout'))
+				
+		# elif 'play_button' in request.form:
+		# 	if request.form['play_button'] == 'start_game':
+		# 		return redirect(url_for('game'))
 
 @app.route('/index/finding', methods=['GET'])
 def finding_game():

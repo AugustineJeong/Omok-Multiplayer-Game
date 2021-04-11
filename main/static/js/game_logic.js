@@ -3,6 +3,12 @@ const socket = io();
 socket.on('placement_response', function(json) {
     console.log("server response received")
     move(json.c, json.x, json.y)
+
+    if (json.c != isPlayerBlue) {
+        game_message.style.color = "orange"
+        game_message.style.borderColor = "orange"
+        game_message.innerText = "Your turn!"
+    }
 })
 
 socket.on('check_entered_room_response', function(json) {
@@ -27,10 +33,24 @@ socket.on('player_colour_assignment', function(json) {
 
     if (isPlayerBlue == 0 || isPlayerBlue == 1) {
         console.log("player colour assigned!");
+        let game_message = document.getElementById('game_message')
+
         if (isPlayerBlue) {
             console.log("player is BLUE")
+            game_message.innerText = "You are BLUE!"
+            setTimeout(() => {
+                game_message.style.color = "orange"
+                game_message.style.borderColor = "orange"
+                game_message.innerText = "Your turn!"
+            }, 3000);
         } else {
             console.log("player is GREY")
+            game_message.innerText = "You are GREY!"
+            setTimeout(() => {
+                game_message.style.color = "black"
+                game_message.style.borderColor = "black"
+                game_message.innerText = "Opponent's turn!"
+            }, 3000);
         }
         isPlayerColourAssigned = 1;
     }
@@ -49,9 +69,6 @@ let isPlayerBlue = -1;
 let isPlayerColourAssigned = 0;
 let gridMatrix;
 
-// this is the colour assigned to the player (1 is blue, 0 is grey)
-let player = 1;
-
 // check if the win condition has been reached for the player
 function checkWinCondition() {
     consecutiveStonesCount = 0;
@@ -59,7 +76,7 @@ function checkWinCondition() {
     // check horizontal win condition
     for (let i = 0; i < 17; i++) {
         for (let j = 0; j < 17; j++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -74,7 +91,7 @@ function checkWinCondition() {
     // check vertical win condition
     for (let j = 0; j < 17; j++) {
         for (let i = 0; i < 17; i++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -89,7 +106,7 @@ function checkWinCondition() {
     // check diagonal win condition
     for (let x = 0; x <= 12; x++) {
         for (let i = x, j = 0; i < 17 && j < 17; i++, j++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -103,7 +120,7 @@ function checkWinCondition() {
 
     for (let y = 1; y <= 12; y++) {
         for (let i = 0, j = y; i < 17 && j < 17; i++, j++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -117,7 +134,7 @@ function checkWinCondition() {
 
     for (let x = 16; x >= 4; x--) {
         for (let i = x, j = 0; i >= 0 && j < 17; i--, j++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -131,7 +148,7 @@ function checkWinCondition() {
 
     for (let y = 1; y <= 12; y++) {
         for (let i = 16, j = y; i >= 0 && j < 17; i--, j++) {
-            if (gridMatrix[i][j] === player) {
+            if (gridMatrix[i][j] === isPlayerBlue) {
                 consecutiveStonesCount++;
                 if (consecutiveStonesCount >= 5) {
                     return true;
@@ -169,6 +186,10 @@ function move(c, x, y) {
         greyStoneCount++;
         blueStoneTurn = 1;
     }
+
+    game_message.style.color = "black"
+    game_message.style.borderColor = "black"
+    game_message.innerText = "Opponent's turn!"
 
     if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
         return;
