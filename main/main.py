@@ -247,10 +247,10 @@ def game():
 		return return_value
 
 	# do not let player join new game session if player is already in one
-	if g.user.id in playersInGame:
+	if g.user.username in playersInGame:
 		return redirect(url_for('main_home'))
 
-	playersInGame.add(g.user.id)
+	playersInGame.add(g.user.username)
 
 	return render_template('game.html')
 
@@ -271,36 +271,26 @@ connectedPlayersList = deque()
 
 # TODO: Implement a way to detect when the user is disconnected and re-implement the below function
 
-# @socketIO.on('disconnect')
-# def handle_disconnect_event():
-#     try:
-#         leave_room(room_number)
-#         room_number = game_rooms_dictionary.pop('key', session.get('user_id'))
-#         game_rooms[room_number].remove(session.get('user_id'))
-#         connectedPlayersList.remove(session.get('user_id'))
-
-#         app.logger.info("removing user_id: " + session.get('user_id'))
-#     except:
-#         pass
-
 @socketIO.on('request_room')
 def request_game_room():
-	if session.get('user_id') not in connectedPlayersList:
-		connectedPlayersList.append(session.get('user_id'))
+	load_logged_in_user()
+	if g.user.username not in connectedPlayersList:
+		connectedPlayersList.append(g.user.username)
 		for i in range(10):
 			if 2 > len(game_rooms[i]):
 				app.logger.info("# of players currently in room " + str(i) + " is (before adding): " + str(len(game_rooms[i])))
-				game_rooms[i].append(session.get('user_id'))
+				game_rooms[i].append(g.user.username)
 				join_room(i)
-				app.logger.info("Player " + str(session.get('user_id')) + " joined room number: " + str(i))
-				game_rooms_dictionary[session.get('user_id')] = i
-				sid_dictionary[session.get('user_id')] = request.sid
+				app.logger.info("Player " + str(g.user.username) + " joined room number: " + str(i))
+				game_rooms_dictionary[g.user.username] = i
+				sid_dictionary[g.user.username] = request.sid
 				app.logger.info("# of players currently in room " + str(i) + " is (after adding): " + str(len(game_rooms[i])))
 				break
 
 def notifyCurrentSessionPlayerColour():
+	load_logged_in_user()
 	isPlayerBlue = None
-	i = game_rooms_dictionary[session.get('user_id')]
+	i = game_rooms_dictionary[g.user.username]
 	for player in game_rooms[i]:
 		try:
 			isPlayerBlue = game_rooms[i].index(player)
@@ -312,35 +302,37 @@ def notifyCurrentSessionPlayerColour():
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
+	load_logged_in_user()
 	try:
-		if len(game_rooms[game_rooms_dictionary[session.get('user_id')]]) == 2:
-			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[session.get('user_id')])
-			i = game_rooms_dictionary[session.get('user_id')]
+		if len(game_rooms[game_rooms_dictionary[g.user.username]]) == 2:
+			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[g.user.username])
+			i = game_rooms_dictionary[g.user.username]
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " in room")
 			notifyCurrentSessionPlayerColour()
 		else:
-			socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[session.get('user_id')])
-			i = game_rooms_dictionary[session.get('user_id')]
+			socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[g.user.username])
+			i = game_rooms_dictionary[g.user.username]
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " not in room")
 	except:
 		app.logger.error("could not find current game room number")
 		json = {'response': False}
-		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[session.get('user_id')])
+		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[g.user.username])
 
 @socketIO.on('disconnect_from_room')
 def disconnect_from_game_room():
 	load_logged_in_user()
-	playersInGame.remove(g.user.id)
+	playersInGame.remove(g.user.username)
 
 	try:
-		if session.get('user_id') in connectedPlayersList:
-			connectedPlayersList.remove(session.get('user_id'))
-			i = game_rooms_dictionary[session.get('user_id')]
+		if g.user.username in connectedPlayersList:
+			connectedPlayersList.remove(g.user.username)
+			i = game_rooms_dictionary[g.user.username]
 			app.logger.info("# of players currently in room " + str(i) + " is (before removing): " + str(len(game_rooms[i])))
 			leave_room(i)
-			game_rooms[i].remove(session.get('user_id'))
-			del game_rooms_dictionary[session.get('user_id')]
-			app.logger.info("Player " + str(session.get('user_id')) + " left room number: " + str(i))
+			game_rooms[i].remove(g.user.username)
+			del game_rooms_dictionary[g.user.username]
+			del sid_dictionary[g.user.username]
+			app.logger.info("Player " + str(g.user.username) + " left room number: " + str(i))
 			app.logger.info("# of players currently in room " + str(i) + " is (after removing): " + str(len(game_rooms[i])))
 	except:
 		app.logger.error("error disconnecting user from game room")
@@ -348,7 +340,8 @@ def disconnect_from_game_room():
 
 @socketIO.on('stone_placement')
 def handle_my_custom_event(json):
-	socketIO.emit('placement_response', json, room=game_rooms_dictionary[session.get('user_id')])
+	load_logged_in_user()
+	socketIO.emit('placement_response', json, room=game_rooms_dictionary[g.user.username])
 
 # ------------------------------------------------------------------------------------------
 # run app
