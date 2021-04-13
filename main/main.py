@@ -84,7 +84,7 @@ def game():
 
 game_rooms_dictionary = dict()
 game_rooms = list()
-for i in range(10):
+for i in range(25):
 	game_rooms.append(list())
 connectedPlayersList = deque()
 

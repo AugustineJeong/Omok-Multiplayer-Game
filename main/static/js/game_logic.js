@@ -15,6 +15,7 @@ socket.on('game_session_valid_response', function(json) {
         game_message.style.color = "red";
         game_message.style.borderColor = "red";
         game_message.innerText = "Opponent left the game :(";
+        isGameOver = 1;
         socket.emit('disconnect_from_room');
     }
 })
@@ -43,21 +44,29 @@ socket.on('player_colour_assignment', function(json) {
         let game_message = document.getElementById('game_message');
 
         if (isPlayerBlue) {
-            console.log("player is BLUE");
-            game_message.innerText = "You are BLUE!";
-            setTimeout(() => {
-                game_message.style.color = "orange";
-                game_message.style.borderColor = "orange";
-                game_message.innerText = "Your turn!";
-            }, 3000);
+            if (!isGameOver) {
+                console.log("player is BLUE");
+                game_message.innerText = "You are BLUE!";
+                setTimeout(() => {
+                    if (!isGameOver) {
+                        game_message.style.color = "orange";
+                        game_message.style.borderColor = "orange";
+                        game_message.innerText = "Your turn!";
+                    }
+                }, 3000);
+            }
         } else {
-            console.log("player is GREY");
-            game_message.innerText = "You are GREY!";
-            setTimeout(() => {
-                game_message.style.color = "black";
-                game_message.style.borderColor = "black";
-                game_message.innerText = "Opponent's turn!";
-            }, 3000);
+            if (!isGameOver) {
+                console.log("player is GREY");
+                game_message.innerText = "You are GREY!";
+                setTimeout(() => {
+                    if (!isGameOver) {
+                        game_message.style.color = "black";
+                        game_message.style.borderColor = "black";
+                        game_message.innerText = "Opponent's turn!";
+                    }
+                }, 3000);
+            }
         }
         isPlayerColourAssigned = 1;
     }
