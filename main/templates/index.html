@@ -25,21 +25,6 @@ Copyright (c) 2021 Augusitne Jeong -->
 </head>
 <body>
   <div class="container" style="text-align: center; margin: 30px auto;">
-      <div style="position: absolute; top: 0px; right: 5px;">
-        <form method="post">
-          {% if is_signed_in %}
-            <button class="button" name="corner_button" type="submit" value="log_out" style="text-align: center; 
-                border-color: black; color: black;">
-              Sign out
-            </button>
-          {% else %}
-            <button class="button" name="corner_button" type="submit" value="sign_in" style="text-align: center; 
-                border-color: black; color: black;">
-              Sign in
-            </button>        
-          {% endif %}
-        </form>
-      </div>
     <div class="row">
       <div class="flex-vertical">
         <h1 style="text-align:center">
@@ -53,11 +38,6 @@ Copyright (c) 2021 Augusitne Jeong -->
             </button>
           </form>
         </div>
-      </div>
-      <div style="text-align: center">
-        <p style="color: black;">
-          {{ user_info }}
-        </p> 
       </div>
     </div>
   </div>

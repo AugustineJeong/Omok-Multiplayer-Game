@@ -7,12 +7,6 @@
 # Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# The following license applies to SQLAlchemy
-# Copyright (c) 2005-2021 Michael Bayer and contributors. SQLAlchemy is a trademark of Michael Bayer.
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 # The following license applies to Flask-SocketIO
 # The MIT License (MIT)
 # Copyright (c) 2014 Miguel Grinberg
@@ -35,48 +29,17 @@ import os
 import click
 
 from flask import Flask, flash, g, redirect, render_template, request, session, url_for
-from sqlalchemy import create_engine, Column, String, Integer, Date
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.ext.declarative import declarative_base
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from werkzeug.security import check_password_hash, generate_password_hash
 from collections import deque
 
 # ------------------------------------------------------------------------------------------
-# Flask app, SocketIO, and SQLAlchemy
+# Flask app, SocketIO
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
 	SECRET_KEY ='dev',
 )
-
-try:
-	os.makedirs(app.instance_path)
-except OSError:
-	pass
-
-engine = create_engine('sqlite:///' + os.path.join(app.instance_path, 'db.sqlite3'))
-session_factory = sessionmaker(bind=engine)
-Session = scoped_session(session_factory)
-
-Base = declarative_base()
-
-class User(Base):
-    __tablename__ = 'users'
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String)
-    password = Column(String)
-    wins = Column(Integer)
-    losses = Column(Integer)
-    level = Column(Integer)
-
-    def __init__(self, username, password, wins=0, losses=0, level=1):
-        self.username = username
-        self.password = password
-        self.wins = wins
-        self.losses = losses
-        self.level = level
 
 def init_app(app):
     app.cli.add_command(init_db_command)
@@ -94,203 +57,54 @@ init_app(app)
 socketIO = SocketIO(app)
 
 # ------------------------------------------------------------------------------------------
-# authentication
-
-@app.route('/auth/register', methods=('GET', 'POST'))
-def register():
-	if request.method == 'POST':           
-		databaseSession = Session()
-
-		username = request.form['username']
-		password = request.form['password']
-		confirm_password = request.form['confirm_password']
-
-		error = None
-
-		if not username:
-			error = 'Username is required.'
-		elif not password:
-			error = 'Password is required.'
-		elif len(username) > 10:
-			error = 'Username should be under 10 characters.'
-		elif len(password) > 15:
-			error = 'Password should be under 15 characters.'
-		elif username.isspace():
-			error = 'Username cannot be empty.'
-		else: 
-			userExists = None
-			try:
-				userExists = (databaseSession.query(User).filter(User.username == username).first())
-			except: 
-				pass
-			if (userExists is not None):
-				error = 'Username \'{}\' already exists.'.format(username)
-			elif password != confirm_password:
-				error = 'Passwords do not match.'
-			
-		if error is None:
-			databaseSession.add(User(username, generate_password_hash(password)))
-			databaseSession.commit()
-			databaseSession.close()
-			return redirect(url_for('login'))
-		else:
-			databaseSession.commit()
-			databaseSession.close()
-			flash(error)
-
-	if (g.user is not None):
-		return redirect(url_for('main_home'))
-	else:
-		return render_template('auth/register.html')
-
-@app.route('/auth/login', methods=('GET', 'POST'))
-def login():
-	if request.method == 'POST':
-		if request.form['sign_in_screen_button'] == 'sign_up':
-			return redirect(url_for('register'))
-		elif request.form['sign_in_screen_button'] == 'sign_in':
-			databaseSession = Session()
-
-			username = request.form['username']
-			password = request.form['password']
-
-			user = None
-			try:
-				user = databaseSession.query(User).filter(User.username==username).first()
-			except:
-				pass
-
-			error = None
-
-			if not username:
-				error = 'Username is required.'
-			elif not password:
-				error = 'Password is required.'
-			elif (user is None):
-				error = 'Incorrect username or password.'
-			elif not check_password_hash(user.password, password):
-				error = 'Incorrect username or password.'
-
-			databaseSession.close()
-
-			if error is None:
-				session.clear()
-				session['user_id'] = user.id
-				return redirect(url_for('main_home'))
-
-			flash(error)
-
-	if (g.user is not None):
-		return redirect(url_for('main_home'))
-	else:
-		return render_template('auth/login.html')
-
-@app.route('/auth/logout')
-def logout():
-	session.clear()
-	return redirect(url_for('main_home'))
-
-@app.before_request
-def load_logged_in_user():
-	user_id = session.get('user_id')
-	if user_id is None:
-		g.user = None
-	else:
-		databaseSession = Session()
-		try:
-			g.user = databaseSession.query(User).filter(User.id==user_id).first()
-		except:
-			pass
-		databaseSession.close()
-
-def login_required():
-	if g.user is None:
-		return redirect(url_for('login'))
-	else:
-		return None
-
-# ------------------------------------------------------------------------------------------
 # index
 
-playersInGame = set()
-
-@app.route('/index', methods=('GET', 'POST'))
+@app.route('/', methods=('GET', 'POST'))
 def main_home():
 	if request.method == 'POST':
 		if 'corner_button' in request.form:
 			if request.form['corner_button'] == 'sign_in':
 				return redirect(url_for('login'))
-
 			elif request.form['corner_button'] == 'log_out':
 				return redirect(url_for('logout'))
-				
 		elif 'play_button' in request.form:
 			if request.form['play_button'] == 'start_game':
 				return redirect(url_for('game'))
+				
+	return render_template('index.html')
 
-	if (g.user is None):
-		return render_template('index.html', is_signed_in = 0)
-	else:
-		user_info = (g.user.username + " / Wins: " + str(g.user.wins) + " / Losses: " + str(g.user.losses)
-		+ " / Level: " + str(g.user.level))
-		return render_template('index.html', is_signed_in = 1, user_info = user_info)
-
-@app.route('/index/game', methods=('GET', 'POST'))
+@app.route('/game', methods=('GET', 'POST'))
 def game():
 	if request.method == 'POST':
 		if 'corner_button' in request.form:
 			if request.form['corner_button'] == 'exit_queue':
 				return redirect(url_for('main_home'))
 
-	return_value = login_required()
-	if return_value is not None:
-		return return_value
-
-	# do not let player join new game session if player is already in one
-	if g.user.username in playersInGame:
-		return redirect(url_for('main_home'))
-
-	playersInGame.add(g.user.username)
-
 	return render_template('game.html')
 
-@app.route('/index/finding', methods=['GET'])
-def finding_game():
-	return_value = login_required()
-	if return_value is not None:
-		return return_value
-
-	return render_template('finding.html')
-
 game_rooms_dictionary = dict()
-sid_dictionary = dict()
 game_rooms = list()
 for i in range(10):
 	game_rooms.append(list())
 connectedPlayersList = deque()
 
-# TODO: Implement a way to detect when the user is disconnected and re-implement the below function
-
 @socketIO.on('request_room')
 def request_game_room():
-	load_logged_in_user()
-	if g.user.username not in connectedPlayersList:
-		connectedPlayersList.append(g.user.username)
+	if request.sid not in connectedPlayersList:
+		connectedPlayersList.append(request.sid)
 		for i in range(10):
 			if 2 > len(game_rooms[i]):
 				app.logger.info("# of players currently in room " + str(i) + " is (before adding): " + str(len(game_rooms[i])))
-				game_rooms[i].append(g.user.username)
+				game_rooms[i].append(request.sid)
 				join_room(i)
-				app.logger.info("Player " + str(g.user.username) + " joined room number: " + str(i))
-				game_rooms_dictionary[g.user.username] = i
-				sid_dictionary[g.user.username] = request.sid
+				app.logger.info("Player " + str(request.sid) + " joined room number: " + str(i))
+				game_rooms_dictionary[request.sid] = i
 				app.logger.info("# of players currently in room " + str(i) + " is (after adding): " + str(len(game_rooms[i])))
 				break
 
 def notifyCurrentSessionPlayerColour():
-	load_logged_in_user()
 	isPlayerBlue = None
-	i = game_rooms_dictionary[g.user.username]
+	i = game_rooms_dictionary[request.sid]
 	for player in game_rooms[i]:
 		try:
 			isPlayerBlue = game_rooms[i].index(player)
@@ -298,50 +112,45 @@ def notifyCurrentSessionPlayerColour():
 		except:
 			pass
 		if isPlayerBlue == 0 or isPlayerBlue == 1:
-			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=sid_dictionary[player])
+			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=player)
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
-	load_logged_in_user()
 	try:
-		if len(game_rooms[game_rooms_dictionary[g.user.username]]) == 2:
-			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[g.user.username])
-			i = game_rooms_dictionary[g.user.username]
+		if len(game_rooms[game_rooms_dictionary[request.sid]]) == 2:
+			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[request.sid])
+			i = game_rooms_dictionary[request.sid]
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " in room")
 			notifyCurrentSessionPlayerColour()
 		else:
-			socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[g.user.username])
-			i = game_rooms_dictionary[g.user.username]
+			socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[request.sid])
+			i = game_rooms_dictionary[request.sid]
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " not in room")
 	except:
 		app.logger.error("could not find current game room number")
 		json = {'response': False}
-		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[g.user.username])
+		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[request.sid])
 
 @socketIO.on('disconnect_from_room')
 def disconnect_from_game_room():
-	load_logged_in_user()
-	playersInGame.remove(g.user.username)
-
 	try:
-		if g.user.username in connectedPlayersList:
-			connectedPlayersList.remove(g.user.username)
-			i = game_rooms_dictionary[g.user.username]
+		if request.sid in connectedPlayersList:
+			socketIO.emit('game_session_valid_response', {'session_valid': False}, room=game_rooms_dictionary[request.sid])
+			connectedPlayersList.remove(request.sid)
+			i = game_rooms_dictionary[request.sid]
 			app.logger.info("# of players currently in room " + str(i) + " is (before removing): " + str(len(game_rooms[i])))
 			leave_room(i)
-			game_rooms[i].remove(g.user.username)
-			del game_rooms_dictionary[g.user.username]
-			del sid_dictionary[g.user.username]
-			app.logger.info("Player " + str(g.user.username) + " left room number: " + str(i))
+			game_rooms[i].remove(request.sid)
+			del game_rooms_dictionary[request.sid]
+			app.logger.info("Player " + str(request.sid) + " left room number: " + str(i))
 			app.logger.info("# of players currently in room " + str(i) + " is (after removing): " + str(len(game_rooms[i])))
 	except:
 		app.logger.error("error disconnecting user from game room")
 		pass
 
 @socketIO.on('stone_placement')
-def handle_my_custom_event(json):
-	load_logged_in_user()
-	socketIO.emit('placement_response', json, room=game_rooms_dictionary[g.user.username])
+def stone_placement(json):
+	socketIO.emit('placement_response', json, room=game_rooms_dictionary[request.sid])
 
 # ------------------------------------------------------------------------------------------
 # run app

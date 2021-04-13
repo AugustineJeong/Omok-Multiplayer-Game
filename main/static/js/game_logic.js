@@ -1,55 +1,62 @@
 const socket = io();
 
 socket.on('placement_response', function(json) {
-    console.log("server response received")
     move(json.c, json.x, json.y)
 
-    if (json.c != isPlayerBlue) {
-        game_message.style.color = "orange"
-        game_message.style.borderColor = "orange"
-        game_message.innerText = "Your turn!"
+    if (json.c != isPlayerBlue && !isGameOver) {
+        game_message.style.color = "orange";
+        game_message.style.borderColor = "orange";
+        game_message.innerText = "Your turn!";
+    }
+})
+
+socket.on('game_session_valid_response', function(json) {
+    if (!json.session_valid && !isGameOver && !checkWinCondition() && !checkLoseCondition()) {
+        game_message.style.color = "red";
+        game_message.style.borderColor = "red";
+        game_message.innerText = "Opponent left the game :(";
+        socket.emit('disconnect_from_room');
     }
 })
 
 socket.on('check_entered_room_response', function(json) {
     console.log(json)
 
-    playerInRoom = json.response
+    playerInRoom = json.response;
 
     if (playerInRoom) {
         console.log("player in room now!");
         clearInterval(intervalId);
+        clearInterval(reloadIntervalId);
 
-        document.getElementById('game_search_status').innerText = "Found game, joining!"
-        document.getElementById('finding_view').style.display = 'none'
-        document.getElementById('game_view').style.display = 'block'
+        document.getElementById('game_search_status').innerText = "Found game, joining!";
+        document.getElementById('finding_view').style.display = 'none';
+        document.getElementById('game_view').style.display = 'block';
     }
 })
 
 socket.on('player_colour_assignment', function(json) {
-    console.log(json)
-
     isPlayerBlue = json.isPlayerBlue
 
     if (isPlayerBlue == 0 || isPlayerBlue == 1) {
         console.log("player colour assigned!");
-        let game_message = document.getElementById('game_message')
+        let game_message = document.getElementById('game_message');
 
         if (isPlayerBlue) {
-            console.log("player is BLUE")
-            game_message.innerText = "You are BLUE!"
+            console.log("player is BLUE");
+            game_message.innerText = "You are BLUE!";
             setTimeout(() => {
-                game_message.style.color = "orange"
-                game_message.style.borderColor = "orange"
-                game_message.innerText = "Your turn!"
+                game_message.style.color = "orange";
+                game_message.style.borderColor = "orange";
+                game_message.innerText = "Your turn!";
             }, 3000);
         } else {
-            console.log("player is GREY")
-            game_message.innerText = "You are GREY!"
+            console.log("player is GREY");
+            game_message.innerText = "You are GREY!";
             setTimeout(() => {
-                game_message.style.color = "black"
-                game_message.style.borderColor = "black"
-                game_message.innerText = "Opponent's turn!"
+                game_message.style.color = "black";
+                game_message.style.borderColor = "black";
+                game_message.innerText = "Opponent's turn!";
             }, 3000);
         }
         isPlayerColourAssigned = 1;
@@ -58,6 +65,7 @@ socket.on('player_colour_assignment', function(json) {
 
 let playerInRoom = false;
 let intervalId;
+let reloadIntervalId;
 
 const main_board = document.getElementById('main_board');
 
@@ -68,10 +76,11 @@ let blueStoneTurn = 1;
 let isPlayerBlue = -1;
 let isPlayerColourAssigned = 0;
 let gridMatrix;
+let isGameOver = 0;
 
 // check if the win condition has been reached for the player
 function checkWinCondition() {
-    consecutiveStonesCount = 0;
+    let consecutiveStonesCount = 0;
 
     // check horizontal win condition
     for (let i = 0; i < 17; i++) {
@@ -163,6 +172,100 @@ function checkWinCondition() {
     return false;
 }
 
+// check if the lose condition has been reached for the player
+function checkLoseCondition() {
+    let consecutiveStonesCount = 0;
+
+    // check horizontal win condition
+    for (let i = 0; i < 17; i++) {
+        for (let j = 0; j < 17; j++) {
+            if (gridMatrix[i][j] == !isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    // check vertical win condition
+    for (let j = 0; j < 17; j++) {
+        for (let i = 0; i < 17; i++) {
+            if (gridMatrix[i][j] == !isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    // check diagonal win condition
+    for (let x = 0; x <= 12; x++) {
+        for (let i = x, j = 0; i < 17 && j < 17; i++, j++) {
+            if (gridMatrix[i][j] == !isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }       
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    for (let y = 1; y <= 12; y++) {
+        for (let i = 0, j = y; i < 17 && j < 17; i++, j++) {
+            if (gridMatrix[i][j] == isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }       
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    for (let x = 16; x >= 4; x--) {
+        for (let i = x, j = 0; i >= 0 && j < 17; i--, j++) {
+            if (gridMatrix[i][j] == !isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }       
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    for (let y = 1; y <= 12; y++) {
+        for (let i = 16, j = y; i >= 0 && j < 17; i--, j++) {
+            if (gridMatrix[i][j] == !isPlayerBlue) {
+                consecutiveStonesCount++;
+                if (consecutiveStonesCount >= 5) {
+                    return true;
+                }
+            } else {
+                consecutiveStonesCount = 0;
+            }       
+        }
+        consecutiveStonesCount = 0;
+    }
+
+    return false;
+}
+
 // this function places the stone on the specified position and also 
 // adds this information to gridMatrix
 function move(c, x, y) {
@@ -172,8 +275,16 @@ function move(c, x, y) {
         return;
     }
 
+    if (isGameOver) {
+        return;
+    }
+
     // return if player attempts to make move when it is not their turn
     if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+        return;
+    }
+
+    if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
         return;
     }
 
@@ -185,14 +296,6 @@ function move(c, x, y) {
         stone.classList.add('greyStone')
         greyStoneCount++;
         blueStoneTurn = 1;
-    }
-
-    game_message.style.color = "black"
-    game_message.style.borderColor = "black"
-    game_message.innerText = "Opponent's turn!"
-
-    if (x <= 1 || x >= 36 || y <= 1 || y >= 36) {
-        return;
     }
 
     if (x % 2 == 0 && y % 2 == 0) {
@@ -224,12 +327,30 @@ function move(c, x, y) {
         gridMatrix[xCoordinate][yCoordinate] = c;
         main_board.append(stone);
 
+        game_message.style.color = "black";
+        game_message.style.borderColor = "black";
+        game_message.innerText = "Opponent's turn!";
+
         socket.emit('stone_placement', {
             c : c,
             x : x,
             y : y
         });
-    } 
+
+        if (checkWinCondition()) {
+            game_message.style.color = "green";
+            game_message.style.borderColor = "green";
+            game_message.innerText = "You won :)";
+            isGameOver = 1;
+            socket.emit('disconnect_from_room');
+        } else if (checkLoseCondition()) {
+            game_message.style.color = "red";
+            game_message.style.borderColor = "red";
+            game_message.innerText = "You lost :(";
+            isGameOver = 1;
+            socket.emit('disconnect_from_room');
+        }
+    }
 }
 
 window.onload = setup;
@@ -274,10 +395,14 @@ function setup() {
     socket.emit('request_room');
 
     window.onbeforeunload = () => {
-        socket.emit('disconnect_from_room')
+        socket.emit('disconnect_from_room');
     }
 
     intervalId = setInterval(() => {
         socket.emit('check_entered_room');
     }, 5000);
+
+    reloadIntervalId = setInterval(() => {
+        location.reload();
+    }, 15000);
 }
