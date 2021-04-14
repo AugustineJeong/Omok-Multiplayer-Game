@@ -46,7 +46,7 @@ socket.on('check_entered_room_response', function(json) {
                     location.reload();
                 }, 15000);
             }
-        }, 3000);
+        }, 1000);
     }
 })
 
