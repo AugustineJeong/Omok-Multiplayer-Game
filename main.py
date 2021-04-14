@@ -38,7 +38,7 @@ from collections import deque
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
-	SECRET_KEY ='dev',
+	SECRET_KEY ='codingPenguins',
 )
 
 def init_app(app):
@@ -84,7 +84,7 @@ def game():
 
 game_rooms_dictionary = dict()
 game_rooms = list()
-for i in range(25):
+for i in range(50):
 	game_rooms.append(list())
 connectedPlayersList = deque()
 

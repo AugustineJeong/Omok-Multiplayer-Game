@@ -11,13 +11,15 @@ socket.on('placement_response', function(json) {
 })
 
 socket.on('game_session_valid_response', function(json) {
-    if (!json.session_valid && !isGameOver && !checkWinCondition() && !checkLoseCondition()) {
-        game_message.style.color = "red";
-        game_message.style.borderColor = "red";
-        game_message.innerText = "Opponent left the game :(";
-        isGameOver = 1;
-        socket.emit('disconnect_from_room');
-    }
+    setTimeout(() => {
+        if (!json.session_valid && !isGameOver && !checkWinCondition() && !checkLoseCondition()) {
+            game_message.style.color = "red";
+            game_message.style.borderColor = "red";
+            game_message.innerText = "Opponent left the game :(";
+            isGameOver = 1;
+            socket.emit('disconnect_from_room');
+        }
+    }, 3000);
 })
 
 socket.on('check_entered_room_response', function(json) {
@@ -418,6 +420,10 @@ function setup() {
     socket.emit('request_room');
 
     window.onbeforeunload = () => {
+        socket.emit('disconnect_from_room');
+    };
+
+    window.onpagehide = () => {
         socket.emit('disconnect_from_room');
     };
 
