@@ -1,0 +1,138 @@
+.flex-vertical {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 570px;
+}
+
+.customCenter {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}
+
+.loader {
+  border: 3px solid black;
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+.grid {
+  width: 540px;
+  height: 540px;
+  z-index: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(36, calc(540px / 36));
+  grid-template-rows: repeat(36, calc(540px / 36));
+}
+
+.lines {
+  border-right: 3px solid lightblue;
+  border-left: 2px solid lightblue;
+  border-bottom: 2px solid lightblue;
+  border-top: 3.5px solid lightblue;
+  z-index: 2;
+  position: relative;
+  background-size: calc(540px / 18) calc(540px / 18);
+  background-image: 
+    linear-gradient(to top, lightblue 1px, transparent 1px),
+    linear-gradient(to right, lightblue 1px, transparent 1px);
+}
+
+.dot {
+  height: 7px;
+  width: 7px;
+  z-index: 3;
+  position: relative;
+  background-color: lightblue;
+  border-radius: 100%;
+  align-self: center;
+  justify-self: center;
+  margin: auto
+}
+
+.blueStone {
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+  position: relative;
+  background-color: skyblue;
+  border-radius: 100%;
+  align-self: center;
+  justify-self: center;
+  margin: auto
+}
+
+.greyStone {
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+  position: relative;    
+  background-color: lightgray;
+  border-radius: 100%;
+  align-self: center;
+  justify-self: center;
+  margin: auto
+}
+
+@media only screen and (max-width: 540px) {
+  .grid {
+    width: 360px;
+    height: 360px;
+    z-index: 1;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(36, calc(360px / 36));
+    grid-template-rows: repeat(36, calc(360px / 36));
+  }
+
+  .lines {
+    border-right: 2.0px solid lightblue;
+    border-left: 1.2px solid lightblue;
+    border-bottom: 2.0px solid lightblue;
+    border-top: 1.2px solid lightblue;
+    z-index: 2;
+    position: relative;
+    background-size: calc(360px / 18) calc(360px / 18);
+    background-image: 
+      linear-gradient(to right, lightblue 1px, transparent 1px),
+      linear-gradient(to bottom, lightblue 1px, transparent 1px);
+  }
+  
+  .blueStone {
+    height: 17px;
+    width: 17px;
+    z-index: 10;
+    position: relative;
+    background-color: skyblue;
+    border-radius: 100%;
+    align-self: center;
+    justify-self: center;
+    margin: auto
+  }
+
+  .greyStone {
+    height: 17px;
+    width: 17px;
+    z-index: 10;
+    position: relative;
+    background-color: lightgray;
+    border-radius: 100%;
+    align-self: center;
+    justify-self: center;
+    margin: auto
+  }
+}
