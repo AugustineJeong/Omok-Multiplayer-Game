@@ -30,10 +30,23 @@ socket.on('check_entered_room_response', function(json) {
         clearInterval(intervalId);
         clearInterval(reloadIntervalId);
 
-        document.getElementById('game_search_status').innerText = "Found game, joining!";
-        document.getElementById('game_room_info').innerText = "You are in game room # ".concat(String(json.game_room_number));
-        document.getElementById('finding_view').style.display = 'none';
-        document.getElementById('game_view').style.display = 'block';
+        setTimeout(() => {
+            if (isPlayerColourAssigned) {
+                document.getElementById('game_search_status').innerText = "Found game, joining!";
+                document.getElementById('game_room_info').innerText = 
+                    "You are in game room # ".concat(String(json.game_room_number));
+                document.getElementById('finding_view').style.display = 'none';
+                document.getElementById('game_view').style.display = 'block';
+            } else {
+                playerInRoom = 0;
+                intervalId = setInterval(() => {
+                    socket.emit('check_entered_room');
+                }, 5000);
+                reloadIntervalId = setInterval(() => {
+                    location.reload();
+                }, 15000);
+            }
+        }, 3000);
     }
 })
 
@@ -406,7 +419,7 @@ function setup() {
 
     window.onbeforeunload = () => {
         socket.emit('disconnect_from_room');
-    }
+    };
 
     intervalId = setInterval(() => {
         socket.emit('check_entered_room');
