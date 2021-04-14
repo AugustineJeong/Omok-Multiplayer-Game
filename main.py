@@ -90,7 +90,7 @@ connectedPlayersList = deque()
 
 @socketIO.on('request_room')
 def request_game_room():
-	app.logger.info("Player " + str(request.sid) + " requested room"
+	app.logger.info("Player " + str(request.sid) + " requested room")
 	if request.sid not in connectedPlayersList:
 		connectedPlayersList.append(request.sid)
 		for i in range(10):
@@ -117,7 +117,7 @@ def notifyCurrentSessionPlayerColour():
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
-	app.logger.info("Player " + str(request.sid) + " is requesting check_entered_room"
+	app.logger.info("Player " + str(request.sid) + " is requesting check_entered_room")
 	try:
 		if len(game_rooms[game_rooms_dictionary[request.sid]]) == 2:
 			socketIO.emit('check_entered_room_response', {'response': True, 'game_room_number': (game_rooms_dictionary[request.sid] + 1)}, 
