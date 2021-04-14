@@ -19,9 +19,10 @@
 
 import os
 import click
+import time
 
 from flask import Flask, flash, g, redirect, render_template, request, url_for
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect, close_room
 from collections import deque
 
 # ------------------------------------------------------------------------------------------
@@ -129,17 +130,23 @@ def disconnect_from_game_room():
 	try:
 		if request.sid in connectedPlayersList:
 			socketIO.emit('game_session_valid_response', {'session_valid': False}, room=game_rooms_dictionary[request.sid])
-			connectedPlayersList.remove(request.sid)
-			i = game_rooms_dictionary[request.sid]
-			app.logger.info("# of players currently in room " + str(i + 1) + " is (before removing): " + str(len(game_rooms[i])))
-			leave_room(i)
-			game_rooms[i].remove(request.sid)
-			del game_rooms_dictionary[request.sid]
-			app.logger.info("Player " + str(request.sid) + " left room number: " + str(i))
+			i = game_rooms_dictionary[request.sid]	
+
+			# sleep to allow socketIO emit to reach client before disconnecting client
+			time.sleep(2)
+
+			app.logger.info("Clearing room " + str(i + 1))	
+			
+			for sid in game_rooms[i]:
+				del game_rooms_dictionary[sid]
+				disconnect(sid)
+				connectedPlayersList.remove(sid)
+			
+			close_room(i)
+			game_rooms[i].clear()
 			app.logger.info("# of players currently in room " + str(i + 1) + " is (after removing): " + str(len(game_rooms[i])))
 	except:
-		app.logger.error("error disconnecting user from game room")
-		pass
+		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
 
 @socketIO.on('stone_placement')
 def stone_placement(json):
