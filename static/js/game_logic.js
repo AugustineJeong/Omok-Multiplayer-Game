@@ -44,7 +44,7 @@ socket.on('check_entered_room_response', function(json) {
                 }, 5000);
                 reloadIntervalId = setInterval(() => {
                     location.reload();
-                }, 15000);
+                }, 100000);
             }
         }, 1000);
     }
@@ -427,5 +427,5 @@ function setup() {
 
     reloadIntervalId = setInterval(() => {
         location.reload();
-    }, 15000);
+    }, 100000);
 }
