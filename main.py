@@ -90,16 +90,17 @@ connectedPlayersList = deque()
 
 @socketIO.on('request_room')
 def request_game_room():
+	app.logger.info("Player " + str(request.sid) + " requested room"
 	if request.sid not in connectedPlayersList:
 		connectedPlayersList.append(request.sid)
 		for i in range(10):
 			if 2 > len(game_rooms[i]):
-				app.logger.info("# of players currently in room " + str(i) + " is (before adding): " + str(len(game_rooms[i])))
+				app.logger.info("# of players currently in room " + str(i + 1) + " is (before adding): " + str(len(game_rooms[i])))
 				game_rooms[i].append(request.sid)
 				join_room(i)
-				app.logger.info("Player " + str(request.sid) + " joined room number: " + str(i))
+				app.logger.info("Player " + str(request.sid) + " joined room number: " + str(i + 1))
 				game_rooms_dictionary[request.sid] = i
-				app.logger.info("# of players currently in room " + str(i) + " is (after adding): " + str(len(game_rooms[i])))
+				app.logger.info("# of players currently in room " + str(i + 1) + " is (after adding): " + str(len(game_rooms[i])))
 				break
 
 def notifyCurrentSessionPlayerColour():
@@ -116,6 +117,7 @@ def notifyCurrentSessionPlayerColour():
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
+	app.logger.info("Player " + str(request.sid) + " is requesting check_entered_room"
 	try:
 		if len(game_rooms[game_rooms_dictionary[request.sid]]) == 2:
 			socketIO.emit('check_entered_room_response', {'response': True, 'game_room_number': (game_rooms_dictionary[request.sid] + 1)}, 
@@ -138,12 +140,12 @@ def disconnect_from_game_room():
 			socketIO.emit('game_session_valid_response', {'session_valid': False}, room=game_rooms_dictionary[request.sid])
 			connectedPlayersList.remove(request.sid)
 			i = game_rooms_dictionary[request.sid]
-			app.logger.info("# of players currently in room " + str(i) + " is (before removing): " + str(len(game_rooms[i])))
+			app.logger.info("# of players currently in room " + str(i + 1) + " is (before removing): " + str(len(game_rooms[i])))
 			leave_room(i)
 			game_rooms[i].remove(request.sid)
 			del game_rooms_dictionary[request.sid]
 			app.logger.info("Player " + str(request.sid) + " left room number: " + str(i))
-			app.logger.info("# of players currently in room " + str(i) + " is (after removing): " + str(len(game_rooms[i])))
+			app.logger.info("# of players currently in room " + str(i + 1) + " is (after removing): " + str(len(game_rooms[i])))
 	except:
 		app.logger.error("error disconnecting user from game room")
 		pass
