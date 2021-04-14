@@ -28,7 +28,7 @@ socket.on('check_entered_room_response', function(json) {
     if (playerInRoom) {
         console.log("player in room now!");
         clearInterval(intervalId);
-        // clearInterval(reloadIntervalId);
+        clearInterval(reloadIntervalId);
 
         setTimeout(() => {
             if (isPlayerColourAssigned) {
@@ -42,9 +42,9 @@ socket.on('check_entered_room_response', function(json) {
                 intervalId = setInterval(() => {
                     socket.emit('check_entered_room');
                 }, 5000);
-                // reloadIntervalId = setInterval(() => {
-                //     location.reload();
-                // }, 100000);
+                reloadIntervalId = setInterval(() => {
+                    location.reload();
+                }, 15000);
             }
         }, 1000);
     }
@@ -88,7 +88,7 @@ socket.on('player_colour_assignment', function(json) {
 
 let playerInRoom = false;
 let intervalId;
-// let reloadIntervalId;
+let reloadIntervalId;
 
 const main_board = document.getElementById('main_board');
 
@@ -425,7 +425,7 @@ function setup() {
         socket.emit('check_entered_room');
     }, 5000);
 
-    // reloadIntervalId = setInterval(() => {
-    //     location.reload();
-    // }, 100000);
+    reloadIntervalId = setInterval(() => {
+        location.reload();
+    }, 15000);
 }
