@@ -31,6 +31,7 @@ socket.on('check_entered_room_response', function(json) {
         clearInterval(reloadIntervalId);
 
         document.getElementById('game_search_status').innerText = "Found game, joining!";
+        document.getElementById('game_room_info').innerText = "You are in game room # ".concat(String(json.game_room_number));
         document.getElementById('finding_view').style.display = 'none';
         document.getElementById('game_view').style.display = 'block';
     }

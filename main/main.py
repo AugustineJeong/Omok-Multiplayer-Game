@@ -118,7 +118,8 @@ def notifyCurrentSessionPlayerColour():
 def check_entered_game_room():
 	try:
 		if len(game_rooms[game_rooms_dictionary[request.sid]]) == 2:
-			socketIO.emit('check_entered_room_response', {'response': True}, room=game_rooms_dictionary[request.sid])
+			socketIO.emit('check_entered_room_response', {'response': True, 'game_room_number': (game_rooms_dictionary[request.sid] + 1)}, 
+				room=game_rooms_dictionary[request.sid])
 			i = game_rooms_dictionary[request.sid]
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " in room")
 			notifyCurrentSessionPlayerColour()
@@ -128,8 +129,7 @@ def check_entered_game_room():
 			app.logger.info("player " + str(game_rooms[i][0]) + " and " + str(game_rooms[i][1]) + " not in room")
 	except:
 		app.logger.error("could not find current game room number")
-		json = {'response': False}
-		socketIO.emit('check_entered_room_response', json, room=game_rooms_dictionary[request.sid])
+		socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[request.sid])
 
 @socketIO.on('disconnect_from_room')
 def disconnect_from_game_room():
