@@ -20,6 +20,7 @@
 import os
 import click
 import time
+import random
 
 from flask import Flask, flash, g, redirect, render_template, request, url_for
 from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect, close_room
@@ -49,30 +50,7 @@ init_app(app)
 socketIO = SocketIO(app)
 
 # ------------------------------------------------------------------------------------------
-# index
-
-@app.route('/', methods=('GET', 'POST'))
-def main_home():
-	if request.method == 'POST':
-		if 'corner_button' in request.form:
-			if request.form['corner_button'] == 'sign_in':
-				return redirect(url_for('login'))
-			elif request.form['corner_button'] == 'log_out':
-				return redirect(url_for('logout'))
-		elif 'play_button' in request.form:
-			if request.form['play_button'] == 'start_game':
-				return redirect(url_for('game'))
-				
-	return render_template('index.html')
-
-@app.route('/game', methods=('GET', 'POST'))
-def game():
-	if request.method == 'POST':
-		if 'corner_button' in request.form:
-			if request.form['corner_button'] == 'exit_queue':
-				return redirect(url_for('main_home'))
-
-	return render_template('game.html')
+# random games SocketIO
 
 game_rooms_dictionary = dict()
 game_rooms = list()
@@ -85,7 +63,7 @@ def request_game_room():
 	app.logger.info("Player " + str(request.sid) + " requested room")
 	if request.sid not in connectedPlayersList:
 		connectedPlayersList.append(request.sid)
-		for i in range(10):
+		for i in range(len(game_rooms)):
 			if 2 > len(game_rooms[i]):
 				app.logger.info("# of players currently in room " + str(i + 1) + " is (before adding): " + str(len(game_rooms[i])))
 				game_rooms[i].append(request.sid)
@@ -94,6 +72,7 @@ def request_game_room():
 				game_rooms_dictionary[request.sid] = i
 				app.logger.info("# of players currently in room " + str(i + 1) + " is (after adding): " + str(len(game_rooms[i])))
 				break
+
 
 def notifyCurrentSessionPlayerColour():
 	isPlayerBlue = None
@@ -106,6 +85,7 @@ def notifyCurrentSessionPlayerColour():
 			pass
 		if isPlayerBlue == 0 or isPlayerBlue == 1:
 			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=player)
+
 
 @socketIO.on('check_entered_room')
 def check_entered_game_room():
@@ -125,6 +105,7 @@ def check_entered_game_room():
 		app.logger.error("could not find current game room number")
 		socketIO.emit('check_entered_room_response', {'response': False}, room=game_rooms_dictionary[request.sid])
 
+
 @socketIO.on('disconnect_from_room')
 def disconnect_from_game_room():
 	try:
@@ -135,7 +116,7 @@ def disconnect_from_game_room():
 			# sleep to allow socketIO emit to reach client before disconnecting client
 			time.sleep(2)
 
-			app.logger.info("Clearing room " + str(i + 1))	
+			app.logger.info("clearing room " + str(i + 1))	
 			
 			for sid in game_rooms[i]:
 				del game_rooms_dictionary[sid]
@@ -148,9 +129,103 @@ def disconnect_from_game_room():
 	except:
 		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
 
+
 @socketIO.on('stone_placement')
 def stone_placement(json):
 	socketIO.emit('placement_response', json, room=game_rooms_dictionary[request.sid])
+
+# ------------------------------------------------------------------------------------------
+# private game rooms SocketIO
+
+sid_private_game_rooms_dictionary = dict()
+private_game_rooms_dictionary = dict()
+private_room_connected_players = set()
+
+unique_name_list = ['dolphin', 'donguri', 'turtle', 'omok', 'orange', 'monkey', 'cactus', 'game']
+
+def getUniqueRoomCode():
+	random_code = unique_name_list[random.randint(0, 7)]
+	random_code += str(random.randint(0, 100000))
+	if random_code not in sid_private_game_rooms_dictionary.keys():
+		return random_code
+	else:
+		return getUniqueRoomCode()
+# socketIO.emit('second_player_joined_game_room', {'response': True}, room=sid_private_game_rooms_dictionary[request.sid])
+
+
+@socketIO.on('disconnect_from_room')
+def disconnect_from_game_room():
+	try:
+		if request.sid in inprivate_room_connected_players:
+			socketIO.emit('game_session_valid_response', {'session_valid': False}, room=sid_private_game_rooms_dictionary[request.sid])
+			private_room_name = sid_private_game_rooms_dictionary[request.sid]	
+
+			# sleep to allow socketIO emit to reach client before disconnecting client
+			time.sleep(2)
+
+			app.logger.info("clearing room " + private_room_name)	
+			
+			for sid in sid_private_game_rooms_dictionary[private_room_name]:
+				del sid_private_game_rooms_dictionary[sid]
+				disconnect(sid)
+				private_room_connected_players.remove(sid)
+			
+			close_room(private_room_name)
+			del private_game_rooms_dictionary[private_room_name]
+			app.logger.info("cleared room " + private_room_name)	
+	except:
+		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
+
+
+@socketIO.on('stone_placement')
+def stone_placement(json):
+	socketIO.emit('placement_response', json, room=sid_private_game_rooms_dictionary[request.sid])
+
+# ------------------------------------------------------------------------------------------
+# http requests
+
+@app.route('/', methods=('GET', 'POST'))
+def main_home():
+	if request.method == 'POST':
+		if 'play_button' in request.form:
+			if request.form['play_button'] == 'start_game':
+				return redirect(url_for('modes'))
+
+	return render_template('index.html')
+
+
+@app.route('/game', methods=('GET', 'POST'))
+def game():
+	if request.method == 'POST':
+		if 'corner_button' in request.form:
+			if request.form['corner_button'] == 'exit_queue':
+				return redirect(url_for('main_home'))
+
+	return render_template('game.html')
+
+
+@app.route('/game_modes', methods=('GET', 'POST'))
+def modes():
+	if request.method == 'POST':
+		if 'game_mode_button' in request.form:
+			if request.form['game_mode_button'] == 'random_game':
+				return redirect(url_for('game'))
+			elif request.form['game_mode_button'] == 'create_room':
+				return redirect(url_for('create'))
+			elif request.form['game_mode_button'] == 'join_room':
+				return redirect(url_for('join'))
+
+	return render_template('modes.html')
+
+
+@app.route('/create_game', methods=['GET'])
+def create():
+	return render_template('create_room.html', room_code = getUniqueRoomCode())
+
+
+@app.route('/join_game', methods=['GET'])
+def join():
+	return render_template('join_room.html')
 
 # ------------------------------------------------------------------------------------------
 # run app

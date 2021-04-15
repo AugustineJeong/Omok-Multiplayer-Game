@@ -5,6 +5,11 @@
   height: 570px;
 }
 
+::placeholder { 
+  color: black;
+  opacity: 1; 
+}
+
 .customCenter {
   margin: auto;
   width: 50%;
