@@ -78,14 +78,14 @@ def request_game_room():
 def notifyCurrentSessionPlayerColour():
 	isPlayerBlue = None
 	i = game_rooms_dictionary[request.sid]
-	for player in game_rooms[i]:
+	for sid in game_rooms[i]:
 		try:
-			isPlayerBlue = game_rooms[i].index(player)
-			app.logger.info("player " + str(player) + " colour is: " + str(isPlayerBlue))
+			isPlayerBlue = game_rooms[i].index(sid)
+			app.logger.info("player " + str(sid) + " colour is: " + str(isPlayerBlue))
 		except:
 			pass
 		if isPlayerBlue == 0 or isPlayerBlue == 1:
-			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=player)
+			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=sid)
 
 
 @socketIO.on('check_entered_room')
@@ -151,32 +151,31 @@ def getUniqueRoomCode():
 		return random_code
 	else:
 		return getUniqueRoomCode()
-# socketIO.emit('second_player_joined_game_room', {'response': True}, room=sid_private_game_rooms_dictionary[request.sid])
 
 
-# @socketIO.on('disconnect_from_private_room')
-# def disconnect_from_game_room():
-# 	try:
-# 		if request.sid in private_room_connected_players:
-# 			socketIO.emit('game_session_valid_response_private_room', {'session_valid': False}, 
-# 				room=sid_private_game_rooms_dictionary[request.sid])
-# 			private_room_name = sid_private_game_rooms_dictionary[request.sid]	
+@socketIO.on('disconnect_from_private_room')
+def disconnect_from_game_room():
+	try:
+		if request.sid in private_room_connected_players:
+			socketIO.emit('game_session_valid_response_private_room', {'session_valid': False}, 
+				room=sid_private_game_rooms_dictionary[request.sid])
+			private_room_name = sid_private_game_rooms_dictionary[request.sid]	
 
-# 			# sleep to allow socketIO emit to reach client before disconnecting client
-# 			time.sleep(2)
+			# sleep to allow socketIO emit to reach client before disconnecting client
+			time.sleep(2)
 
-# 			app.logger.info("clearing room " + private_room_name)	
+			app.logger.info("clearing room " + private_room_name)	
 			
-# 			for sid in sid_private_game_rooms_dictionary[private_room_name]:
-# 				del sid_private_game_rooms_dictionary[sid]
-# 				disconnect(sid)
-# 				private_room_connected_players.remove(sid)
+			for sid in private_game_rooms_dictionary[private_room_name]:
+				del sid_private_game_rooms_dictionary[sid]
+				disconnect(sid)
+				private_room_connected_players.remove(sid)
 			
-# 			close_room(private_room_name)
-# 			del private_game_rooms_dictionary[private_room_name]
-# 			app.logger.info("cleared room " + private_room_name)	
-# 	except:
-# 		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
+			close_room(private_room_name)
+			del private_game_rooms_dictionary[private_room_name]
+			app.logger.info("cleared room " + private_room_name)	
+	except:
+		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
 
 
 @socketIO.on('request_private_room_code')
@@ -187,6 +186,19 @@ def private_room_code():
 	private_game_rooms_dictionary[room_code] = [request.sid]
 	private_room_connected_players.add(request.sid)
 	join_room(room_code)
+
+
+def notifyPrivateRoomPlayerColour():
+	isPlayerBlue = None
+	private_room_name = sid_private_game_rooms_dictionary[request.sid]
+	for sid in private_game_rooms_dictionary[private_room_name]:
+		try:
+			isPlayerBlue = private_game_rooms_dictionary[private_room_name].index(sid)
+			app.logger.info("player " + str(sid) + " colour is: " + str(isPlayerBlue))
+		except:
+			pass
+		if isPlayerBlue == 0 or isPlayerBlue == 1:
+			socketIO.emit('player_colour_assignment', {'isPlayerBlue': isPlayerBlue}, room=sid)
 
 
 @socketIO.on('join_by_private_room_code')
@@ -201,6 +213,7 @@ def private_room_code(json):
 				private_room_connected_players.add(request.sid)
 				join_room(json['room_code'])
 				socketIO.emit('start_game_private_room', room=json['room_code'])
+				notifyPrivateRoomPlayerColour()
 			elif (len(private_game_rooms_dictionary[json['room_code']])) < 1:
 				socketIO.emit('join_by_private_room_code_response', {'join_status': 0}, room=request.sid)
 			else:

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Web page created by Augustine Jeong
+
+Copyright (c) 2021 Augusitne Jeong -->
+
+<head>
+  <meta charset="utf-8">
+  <title>Omok (오목)</title>
+  <meta name="description" content="">
+  <meta name="AJ" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- The typography base Raleway is served by Google -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/go_image.png') }}">
+  
+</head>
+<body>
+  <div class="container">
+    <div class="flex-vertical" style="text-align: center;">
+      <form method="post">
+        <div class="row">
+          <div style="display: inline-block;">
+            <img src="{{ url_for('static', filename='images/random.png') }}" 
+              style="width: 70px; height: 70px;">
+            <button class="button" name="game_mode_button" value="random_game" 
+                style="display: block; margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 30px;
+                border-color: #33C3F0; color: #33C3F0; width: 250px;">
+              Play with random player
+            </button>
+          </div>
+          <div style="display: inline-block;">
+            <img src="{{ url_for('static', filename='images/create.png') }}" 
+              style="width: 70px; height: 70px;">
+            <button class="button" name="game_mode_button" value="create_room" 
+                style="display: block; margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 30px;
+                border-color: #33C3F0; color: #33C3F0; width: 250px;">
+              Create private room
+            </button>
+          </div>
+          <div style="display: inline-block;">
+            <img src="{{ url_for('static', filename='images/search.png') }}" 
+              style="width: 50px; height: 50px; margin: 10px 10px;">
+            <button class="button" name="game_mode_button" value="join_room" 
+                style="display: block; margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 30px;
+                border-color: #33C3F0; color: #33C3F0; width: 250px;">
+              Join private room
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>  
+</body>
+</html>
