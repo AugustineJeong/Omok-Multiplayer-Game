@@ -21,6 +21,7 @@ import os
 import click
 import time
 import random
+import json
 
 from flask import Flask, flash, g, redirect, render_template, request, url_for
 from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect, close_room
@@ -153,33 +154,66 @@ def getUniqueRoomCode():
 # socketIO.emit('second_player_joined_game_room', {'response': True}, room=sid_private_game_rooms_dictionary[request.sid])
 
 
-@socketIO.on('disconnect_from_room')
-def disconnect_from_game_room():
+# @socketIO.on('disconnect_from_private_room')
+# def disconnect_from_game_room():
+# 	try:
+# 		if request.sid in private_room_connected_players:
+# 			socketIO.emit('game_session_valid_response_private_room', {'session_valid': False}, 
+# 				room=sid_private_game_rooms_dictionary[request.sid])
+# 			private_room_name = sid_private_game_rooms_dictionary[request.sid]	
+
+# 			# sleep to allow socketIO emit to reach client before disconnecting client
+# 			time.sleep(2)
+
+# 			app.logger.info("clearing room " + private_room_name)	
+			
+# 			for sid in sid_private_game_rooms_dictionary[private_room_name]:
+# 				del sid_private_game_rooms_dictionary[sid]
+# 				disconnect(sid)
+# 				private_room_connected_players.remove(sid)
+			
+# 			close_room(private_room_name)
+# 			del private_game_rooms_dictionary[private_room_name]
+# 			app.logger.info("cleared room " + private_room_name)	
+# 	except:
+# 		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
+
+
+@socketIO.on('request_private_room_code')
+def private_room_code():
+	room_code = getUniqueRoomCode()
+	socketIO.emit('private_room_code', {'room_code': room_code}, room=request.sid)
+	sid_private_game_rooms_dictionary[request.sid] = room_code
+	private_game_rooms_dictionary[room_code] = [request.sid]
+	private_room_connected_players.add(request.sid)
+	join_room(room_code)
+
+
+@socketIO.on('join_by_private_room_code')
+def private_room_code(json):
 	try:
-		if request.sid in inprivate_room_connected_players:
-			socketIO.emit('game_session_valid_response', {'session_valid': False}, room=sid_private_game_rooms_dictionary[request.sid])
-			private_room_name = sid_private_game_rooms_dictionary[request.sid]	
-
-			# sleep to allow socketIO emit to reach client before disconnecting client
-			time.sleep(2)
-
-			app.logger.info("clearing room " + private_room_name)	
-			
-			for sid in sid_private_game_rooms_dictionary[private_room_name]:
-				del sid_private_game_rooms_dictionary[sid]
-				disconnect(sid)
-				private_room_connected_players.remove(sid)
-			
-			close_room(private_room_name)
-			del private_game_rooms_dictionary[private_room_name]
-			app.logger.info("cleared room " + private_room_name)	
+		app.logger.info("player requesting to join " + json['room_code'])
+		if json['room_code'] in private_game_rooms_dictionary.keys():
+			if len(private_game_rooms_dictionary[json['room_code']]) == 1:
+				socketIO.emit('join_by_private_room_code_response', {'join_status': 1}, room=request.sid)
+				sid_private_game_rooms_dictionary[request.sid] = json['room_code']
+				private_game_rooms_dictionary[json['room_code']].append(request.sid)
+				private_room_connected_players.add(request.sid)
+				join_room(json['room_code'])
+				socketIO.emit('start_game_private_room', room=json['room_code'])
+			elif (len(private_game_rooms_dictionary[json['room_code']])) < 1:
+				socketIO.emit('join_by_private_room_code_response', {'join_status': 0}, room=request.sid)
+			else:
+				socketIO.emit('join_by_private_room_code_response', {'join_status': -1}, room=request.sid)
+		else:
+			socketIO.emit('join_by_private_room_code_response', {'join_status': 0}, room=request.sid)
 	except:
-		app.logger.error("error disconnecting user from game room, perhaps user has already been disconnected")
+		app.logger.error("error joining user by private game code")
 
 
-@socketIO.on('stone_placement')
+@socketIO.on('stone_placement_private_room')
 def stone_placement(json):
-	socketIO.emit('placement_response', json, room=sid_private_game_rooms_dictionary[request.sid])
+	socketIO.emit('placement_response_private_room', json, room=sid_private_game_rooms_dictionary[request.sid])
 
 # ------------------------------------------------------------------------------------------
 # http requests
@@ -220,7 +254,7 @@ def modes():
 
 @app.route('/create_game', methods=['GET'])
 def create():
-	return render_template('create_room.html', room_code = getUniqueRoomCode())
+	return render_template('create_room.html')
 
 
 @app.route('/join_game', methods=['GET'])
