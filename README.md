@@ -2,11 +2,11 @@
 
 Omok (오목), also known as five in a row, is a traditional game played in Korea and in many parts of Asia.
 
-This is a project to build a web application on which people can play Omok with other players and keep track of their scores.
+https://omok-game.herokuapp.com
 
-The project will be built using:
+The project was built using:
 - **Python** along with **Flask** and **Flask-SocketIO** for backend.
-- **HTML**, **CSS**, and **JavaScript** along with Skeleton, normalize.css, and socket.io-client for frontend.
+- **HTML**, **CSS**, and **JavaScript** along with **Skeleton**, **normalize.css**, and **socket.io-client** for frontend.
 
 # Screenshots
 <div>
