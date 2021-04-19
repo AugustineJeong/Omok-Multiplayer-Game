@@ -37,6 +37,9 @@ socket.on('game_session_valid_response', function(json) {
             game_message.innerText = "Opponent left the game :(";
             isGameOver = 1;
             socket.emit('disconnect_from_room');
+            setTimeout(() => {
+                window.location.href = 'https://omok-game.herokuapp.com';
+            }, 3000);        
         }
     }, 3000);
 });
