@@ -20,7 +20,7 @@ The project was built using:
 
 # Copyright Notice
 
-The following license applies to [Skeleton](https://github.com/dhg/Skeleton). 
+The following license applies to Skeleton.
 <br/>
 
 The MIT License (MIT)
