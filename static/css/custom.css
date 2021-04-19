@@ -94,13 +94,6 @@
 }
 
 @media only screen and (max-width: 540px) {
-  .flex-vertical {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    height: 750px;
-  }
-
   .grid {
     width: 360px;
     height: 360px;
