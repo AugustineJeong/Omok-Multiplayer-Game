@@ -263,6 +263,9 @@ def main_home():
 		if 'play_button' in request.form:
 			if request.form['play_button'] == 'start_game':
 				return redirect(url_for('modes'))
+		if 'license_info_button' in request.form:
+			if request.form['license_info_button'] == 'show_license_info':
+				return redirect(url_for('license_info'))
 
 	return render_template('index.html')
 
@@ -280,6 +283,12 @@ def modes():
 				return redirect(url_for('join_game_room'))
 
 	return render_template('modes.html')
+
+
+# join game page
+@app.route('/license_info', methods=['GET'])
+def license_info():
+	return render_template('license_page.html')
 
 
 # random game page
