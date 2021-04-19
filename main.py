@@ -188,6 +188,7 @@ def disconnect_from_private_game_room():
 # handler for the unique room code request from player in create room page
 @socketIO.on('request_private_room_code')
 def private_room_code():
+	app.logger.info("Player " + str(request.sid) + " requested room code")
 	room_code = get_unique_room_code()
 	socketIO.emit('private_room_code', {'room_code': room_code}, room=request.sid)
 	sid_private_game_rooms_dictionary[request.sid] = room_code
@@ -214,7 +215,7 @@ def notifyPrivateRoomPlayerColour():
 @socketIO.on('join_by_private_room_code')
 def private_room_code(json):
 	try:
-		app.logger.info("player requesting to join " + json['room_code'])
+		app.logger.info("Player " + str(request.sid) + " requesting to join " + json['room_code'])
 		if json['room_code'] in private_game_rooms_dictionary.keys():
 			if len(private_game_rooms_dictionary[json['room_code']]) == 1:
 				socketIO.emit('join_by_private_room_code_response', {'join_status': 1}, room=request.sid)
@@ -244,7 +245,7 @@ def stone_placement(json):
 
 # handler for user disconnection, triggered by SocketIO
 @socketIO.on('disconnect')
-def disconnect_handler(json):
+def disconnect_handler():
 	try:
 		disconnect_from_game_room()
 		disconnect_from_private_game_room()

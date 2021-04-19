@@ -12,6 +12,67 @@ let isPlayerBlue = -1;
 let isPlayerColourAssigned = 0;
 let gridMatrix;
 let isGameOver = 0;
+let isRoundOver = 0;
+
+// ------------------------------------------------------------------------------------------
+// page setup on load
+
+window.onload = onLoadSetup();
+
+function onLoadSetup() {
+    setup()
+    additionalSetup()
+}
+
+function additionalSetup() {
+    socket.emit('request_private_room_code');
+
+    window.onbeforeunload = () => {
+        socket.emit('disconnect_from_private_room');
+    };
+
+    window.onpagehide = () => {
+        socket.emit('disconnect_from_private_room');
+    };
+}
+
+// this function fills the grid with div elements with an id corresponding to their coordinates
+// an event listener is also added to the div elements to place the stones when they are clicked
+// gridMatrix is initialized with a default value of -1
+function setup() {
+    for (let y = 1; y <= 36; y++) {
+        for (let x = 1; x <= 36; x++) {
+
+            const click_box = document.createElement('div');
+            click_box.id = x + "/" + y;
+
+            let x_end = x + 2;
+            let y_end = y + 2;
+
+            click_box.style.gridColumnStart = x;
+            click_box.style.gridColumnEnd = x_end;
+            click_box.style.gridRowStart = y;
+            click_box.style.gridRowEnd = y_end;
+
+            click_box.addEventListener('click', function() {
+                let x_start = parseInt(this.id.substring(0, this.id.indexOf('/')), 10);
+                let y_start = parseInt(this.id.substring(this.id.indexOf('/') + 1, 10));
+
+                move(isPlayerBlue, x_start, y_start);
+            });
+
+            main_board.append(click_box);
+        }
+    }
+
+    gridMatrix = new Array(17);
+    for (let i = 0; i < 17; i++) {
+        gridMatrix[i] = new Array(17);
+        for (let j = 0; j < 17; j++) {
+            gridMatrix[i][j] = -1;
+        }
+    }
+}
 
 // ------------------------------------------------------------------------------------------
 // SocketIO
@@ -19,7 +80,7 @@ let isGameOver = 0;
 socket.on('placement_response_private_room', function(json) {
     move(json.c, json.x, json.y)
 
-    if (json.c != isPlayerBlue && !isGameOver) {
+    if (json.c != isPlayerBlue && !isGameOver && !isRoundOver) {
         game_message.style.color = "orange";
         game_message.style.borderColor = "orange";
         game_message.innerText = "Your turn!";
@@ -28,14 +89,14 @@ socket.on('placement_response_private_room', function(json) {
 
 socket.on('game_session_valid_response_private_room', function(json) {
     setTimeout(() => {
-        if (!json.session_valid && !isGameOver && !checkWinCondition() && !checkLoseCondition()) {
+        if (!json.session_valid && !isGameOver) {
             game_message.style.color = "red";
             game_message.style.borderColor = "red";
             game_message.innerText = "Opponent left the game :(";
             isGameOver = 1;
             socket.emit('disconnect_from_private_room');
         }
-    }, 3000);
+    }, 500);
 });
 
 socket.on('private_room_code', function(json) {
@@ -48,38 +109,53 @@ socket.on('start_game_private_room', function() {
     document.getElementById('game_view').style.display = 'block';
 });
 
+function showRealTimeTurn() {
+    if (isPlayerBlue != blueStoneTurn) {
+        game_message.style.color = "black";
+        game_message.style.borderColor = "black";
+        game_message.innerText = "Opponent's turn!";  
+    } else {
+        game_message.style.color = "orange";
+        game_message.style.borderColor = "orange";
+        game_message.innerText = "Your turn!";
+    }
+}
+
+function showTurn() {
+    if (isPlayerBlue) {
+        if (!isGameOver) {
+            console.log("player is BLUE");
+            game_message.style.color = "black";
+            game_message.style.borderColor = "black";
+            game_message.innerText = "You are BLUE!";
+            setTimeout(() => {
+                if (!isGameOver) {
+                    showRealTimeTurn();
+                }
+            }, 3000);
+        }
+    } else {
+        if (!isGameOver) {
+            console.log("player is GREY");
+            game_message.style.color = "black";
+            game_message.style.borderColor = "black";
+            game_message.innerText = "You are GREY!";
+            setTimeout(() => {
+                if (!isGameOver) {
+                    showRealTimeTurn();
+                }
+            }, 3000);
+        }
+    }
+}
+
 socket.on('player_colour_assignment', function(json) {
     isPlayerBlue = json.isPlayerBlue
 
     if (isPlayerBlue == 0 || isPlayerBlue == 1) {
         console.log("player colour assigned!");
-        let game_message = document.getElementById('game_message');
 
-        if (isPlayerBlue) {
-            if (!isGameOver) {
-                console.log("player is BLUE");
-                game_message.innerText = "You are BLUE!";
-                setTimeout(() => {
-                    if (!isGameOver) {
-                        game_message.style.color = "orange";
-                        game_message.style.borderColor = "orange";
-                        game_message.innerText = "Your turn!";
-                    }
-                }, 3000);
-            }
-        } else {
-            if (!isGameOver) {
-                console.log("player is GREY");
-                game_message.innerText = "You are GREY!";
-                setTimeout(() => {
-                    if (!isGameOver) {
-                        game_message.style.color = "black";
-                        game_message.style.borderColor = "black";
-                        game_message.innerText = "Opponent's turn!";
-                    }
-                }, 3000);
-            }
-        }
+        showTurn();
         isPlayerColourAssigned = 1;
     }
 });
@@ -275,6 +351,34 @@ function checkLoseCondition() {
     return false;
 }
 
+function startNewRound() {
+    setTimeout(() => {
+        if (!isGameOver) {
+            game_message.style.color = "orange";
+            game_message.style.borderColor = "orange";
+            game_message.innerText = "Starting new round ...";
+            setTimeout(() => {
+                // reset board
+                if (!isGameOver) {
+                    isRoundOver = 0;
+                    blueStoneCount = 0;
+                    greyStoneCount = 0;
+                    blueStoneTurn = 1;
+                    isPlayerBlue = !isPlayerBlue;
+                    for (let i = 0; i < 17; i++) {
+                        for (let j = 0; j < 17; j++) {
+                            gridMatrix[i][j] = -1;
+                        }
+                    }
+                    main_board.innerHTML = "";
+                    setup();
+                    showTurn();
+                } 
+            }, 3000);
+        } 
+    }, 3000);
+}
+
 // this function places the stone on the specified position and also 
 // adds this information to gridMatrix
 function move(c, x, y) {
@@ -284,12 +388,12 @@ function move(c, x, y) {
         return;
     }
 
-    if (isGameOver) {
+    if (isGameOver || isRoundOver) {
         return;
     }
 
     // return if player attempts to make move when it is not their turn
-    if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+    if (c != blueStoneTurn) {
         return;
     }
 
@@ -350,67 +454,16 @@ function move(c, x, y) {
             game_message.style.color = "green";
             game_message.style.borderColor = "green";
             game_message.innerText = "You won :)";
-            isGameOver = 1;
-            socket.emit('disconnect_from_private_room');
+            isRoundOver = 1;
+            // automatically start new round
+            startNewRound();
         } else if (checkLoseCondition()) {
             game_message.style.color = "red";
             game_message.style.borderColor = "red";
             game_message.innerText = "You lost :(";
-            isGameOver = 1;
-            socket.emit('disconnect_from_private_room');
+            isRoundOver = 1;
+            // automatically start new round
+            startNewRound();
         }
     }
-}
-
-// ------------------------------------------------------------------------------------------
-// page setup on load
-
-window.onload = setup;
-
-// this function fills the grid with div elements with an id corresponding to their coordinates
-// an event listener is also added to the div elements to place the stones when they are clicked
-// gridMatrix is initialized with a default value of -1
-function setup() {
-    for (let y = 1; y <= 36; y++) {
-        for (let x = 1; x <= 36; x++) {
-
-            const click_box = document.createElement('div');
-            click_box.id = x + "/" + y;
-
-            let x_end = x + 2;
-            let y_end = y + 2;
-
-            click_box.style.gridColumnStart = x;
-            click_box.style.gridColumnEnd = x_end;
-            click_box.style.gridRowStart = y;
-            click_box.style.gridRowEnd = y_end;
-
-            click_box.addEventListener('click', function() {
-                let x_start = parseInt(this.id.substring(0, this.id.indexOf('/')), 10);
-                let y_start = parseInt(this.id.substring(this.id.indexOf('/') + 1, 10));
-
-                move(isPlayerBlue, x_start, y_start);
-            });
-
-            main_board.append(click_box);
-        }
-    }
-
-    gridMatrix = new Array(17);
-    for (let i = 0; i < 17; i++) {
-        gridMatrix[i] = new Array(17);
-        for (let j = 0; j < 17; j++) {
-            gridMatrix[i][j] = -1;
-        }
-    }
-
-    socket.emit('request_private_room_code');
-
-    window.onbeforeunload = () => {
-        socket.emit('disconnect_from_private_room');
-    };
-
-    window.onpagehide = () => {
-        socket.emit('disconnect_from_private_room');
-    };
 }

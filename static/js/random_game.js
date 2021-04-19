@@ -71,37 +71,53 @@ socket.on('check_entered_room_response', function(json) {
     }
 });
 
+function showRealTimeTurn() {
+    if (isPlayerBlue != blueStoneTurn) {
+        game_message.style.color = "black";
+        game_message.style.borderColor = "black";
+        game_message.innerText = "Opponent's turn!";  
+    } else {
+        game_message.style.color = "orange";
+        game_message.style.borderColor = "orange";
+        game_message.innerText = "Your turn!";
+    }
+}
+
+function showTurn() {
+    if (isPlayerBlue) {
+        if (!isGameOver) {
+            console.log("player is BLUE");
+            game_message.style.color = "black";
+            game_message.style.borderColor = "black";
+            game_message.innerText = "You are BLUE!";
+            setTimeout(() => {
+                if (!isGameOver) {
+                    showRealTimeTurn();
+                }
+            }, 3000);
+        }
+    } else {
+        if (!isGameOver) {
+            console.log("player is GREY");
+            game_message.style.color = "black";
+            game_message.style.borderColor = "black";
+            game_message.innerText = "You are GREY!";
+            setTimeout(() => {
+                if (!isGameOver) {
+                    showRealTimeTurn();
+                }
+            }, 3000);
+        }
+    }
+}
+
 socket.on('player_colour_assignment', function(json) {
     isPlayerBlue = json.isPlayerBlue
 
     if (isPlayerBlue == 0 || isPlayerBlue == 1) {
         console.log("player colour assigned!");
 
-        if (isPlayerBlue) {
-            if (!isGameOver) {
-                console.log("player is BLUE");
-                game_message.innerText = "You are BLUE!";
-                setTimeout(() => {
-                    if (!isGameOver) {
-                        game_message.style.color = "orange";
-                        game_message.style.borderColor = "orange";
-                        game_message.innerText = "Your turn!";
-                    }
-                }, 3000);
-            }
-        } else {
-            if (!isGameOver) {
-                console.log("player is GREY");
-                game_message.innerText = "You are GREY!";
-                setTimeout(() => {
-                    if (!isGameOver) {
-                        game_message.style.color = "black";
-                        game_message.style.borderColor = "black";
-                        game_message.innerText = "Opponent's turn!";
-                    }
-                }, 3000);
-            }
-        }
+        showTurn();
         isPlayerColourAssigned = 1;
     }
 });
@@ -311,7 +327,7 @@ function move(c, x, y) {
     }
 
     // return if player attempts to make move when it is not their turn
-    if ((c && !blueStoneTurn) || (!c && blueStoneTurn)) {
+    if (c != blueStoneTurn) {
         return;
     }
 
@@ -387,7 +403,7 @@ function move(c, x, y) {
 // ------------------------------------------------------------------------------------------
 // page setup on load
 
-window.onload = setup;
+window.onload = setup();
 
 // this function fills the grid with div elements with an id corresponding to their coordinates
 // an event listener is also added to the div elements to place the stones when they are clicked
