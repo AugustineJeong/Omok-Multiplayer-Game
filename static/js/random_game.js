@@ -393,12 +393,18 @@ function move(c, x, y) {
             game_message.innerText = "You won :)";
             isGameOver = 1;
             socket.emit('disconnect_from_room');
+            setTimeout(() => {
+                window.location.href = 'https://omok-game.herokuapp.com';
+            }, 3000); 
         } else if (checkLoseCondition()) {
             game_message.style.color = "red";
             game_message.style.borderColor = "red";
             game_message.innerText = "You lost :(";
             isGameOver = 1;
             socket.emit('disconnect_from_room');
+            setTimeout(() => {
+                window.location.href = 'https://omok-game.herokuapp.com';
+            }, 3000);         
         }
     }
 }
