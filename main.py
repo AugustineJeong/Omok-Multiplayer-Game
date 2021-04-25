@@ -246,6 +246,10 @@ def stone_placement(json):
 # handler for user disconnection, triggered by SocketIO
 @socketIO.on('disconnect')
 def disconnect_handler():
+	socketIO.emit('game_session_valid_response_private_room', {'session_valid': 0}, 
+		room=sid_private_game_rooms_dictionary[request.sid])
+	socketIO.emit('game_session_valid_response_private_room', {'session_valid': 0}, 
+		room=sid_private_game_rooms_dictionary[request.sid])
 	try:
 		disconnect_from_game_room()
 		disconnect_from_private_game_room()

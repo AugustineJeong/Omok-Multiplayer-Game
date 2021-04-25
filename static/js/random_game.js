@@ -34,12 +34,16 @@ socket.on('game_session_valid_response', function(json) {
         if (!json.session_valid && !isGameOver && !checkWinCondition() && !checkLoseCondition()) {
             game_message.style.color = "red";
             game_message.style.borderColor = "red";
-            game_message.innerText = "Opponent left the game :(";
+            if (json.session_valid === 0) {
+                game_message.innerText = "You were disconnected.";
+            } else {
+                game_message.innerText = "Opponent left the game :(";
+            }
             isGameOver = 1;
             socket.emit('disconnect_from_room');
             setTimeout(() => {
                 window.location.href = 'https://omok-game.herokuapp.com';
-            }, 3000);        
+            }, 5000);        
         }
     }, 3000);
 });
